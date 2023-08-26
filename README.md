@@ -110,3 +110,5 @@ Route::prefix('/server')->middleware('auth.admin')->group(function () {
         Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Admin\BannerController::class, 'list']);
     });
 });
+
+项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
