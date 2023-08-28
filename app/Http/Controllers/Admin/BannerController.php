@@ -19,6 +19,10 @@ class BannerController extends AdminBaseController {
         $data = $this->logic->list();
     }
 
+    public function noLogin() {
+        echo '白名单，测试跳过登录';
+    }
+
 
 
 

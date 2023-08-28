@@ -25,6 +25,7 @@ Route::prefix('/server')->middleware('auth.admin')->group(function () {
 
     Route::prefix('/banner')->group(function () {
         Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Admin\BannerController::class, 'list']);
+        Route::match(['get', 'post'], 'noLogin', [\App\Http\Controllers\Admin\BannerController::class, 'noLogin']);
     });
 });
 
