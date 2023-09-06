@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 class LoginController extends BaseController {
 
     function username() {
-        return 'name';
+        return 'account';
     }
 
     public function guard() {
@@ -22,10 +22,10 @@ class LoginController extends BaseController {
      */
     public function login(Request $request) {
         $params = $this->validate($request, [
-            'name' => 'required|max:50',
+            'account' => 'required|max:50',
             'password' => 'required|min:5',
           ]);
-        //   $params = $request->only('name', 'password');
+        //   $params = $request->only('account', 'password');
 
         // 数据表密码需要转哈希存储，如Hash::make(666666);
         if(Auth::guard('admin')->attempt($params)){

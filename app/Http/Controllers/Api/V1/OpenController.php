@@ -6,7 +6,7 @@ use App\Http\BusinessLogic\Banner\BannerLogic;
 use App\Http\Controllers\Api\V1\ApiBaseController;
 use Illuminate\Http\Request;
 
-class BannerController extends ApiBaseController {
+class OpenController extends ApiBaseController {
     protected $logic;
 
     public function __construct() {
@@ -15,10 +15,10 @@ class BannerController extends ApiBaseController {
 
     public function list() {
         $data = $this->logic->list();
+        echo 2;exit;
     }
-
-    public function noLogin() {
-        echo '白名单，测试跳过登录';
+    public function add() {
+        echo 'add';exit;
     }
 
 
