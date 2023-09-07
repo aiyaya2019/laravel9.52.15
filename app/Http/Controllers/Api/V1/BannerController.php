@@ -18,7 +18,7 @@ class BannerController extends ApiBaseController {
     }
 
     public function noLogin() {
-        echo '白名单，测试跳过登录';
+        returnData(200, '白名单，测试跳过登录');
     }
 
 
