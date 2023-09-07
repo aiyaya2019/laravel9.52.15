@@ -6,11 +6,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class LoginController extends BaseController {
 
     function username() {
-        return 'name';
+        return 'account';
     }
 
     public function guard() {
@@ -21,16 +22,22 @@ class LoginController extends BaseController {
      * 登录
      */
     public function login(Request $request) {
-        $params = $request->only('name', 'password');
+        $params = $request->only('account', 'password');
 
-        // 数据表密码需要转哈希存储，如Hash::make(666666);
-        if($token = Auth::guard('api')->attempt($params)){
-            $userInfo = Auth::guard('api')->user();
+        $user = User::where('account', $params['account'])->first();
 
-            return response()->json(['code' => 200, 'msg' => '登录成功', 'token' => $userInfo->remember_token]);
-        } else {
+        if (!$user) {
             return response()->json(['code' => 400, 'msg' => '用户名或密码错误']);
         }
+
+        if (!Hash::check($params['password'], $user->password)) {
+            return response()->json(['code' => 400, 'msg' => '用户名或密码错误']);
+        }
+
+        $token = auth('api')->login($user);
+
+        return response()->json(['code' => 200, 'msg' => '登录成功', 'token' => 'Bearer  ' .$token]);
+
     }
 
     /**

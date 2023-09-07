@@ -25,8 +25,13 @@ class ApiAuth {
             return $next($request);
         }
 
+        // 跳过登录验证
+        if (!empty($request->input('debug')) && $request->input('debug') == 'test') {
+            return $next($request);
+        }
+
         if (!Auth::guard('api')->check()) {
-            return response()->json(['code' => 300, 'msg' => '没有登录1']);
+            return response()->json(['code' => 300, 'msg' => '没有登录apiauth']);
         }
         return $next($request);
     }

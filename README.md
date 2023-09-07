@@ -65,8 +65,9 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
+项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
 
-
+admin模块登录验证
 用admin表验证登录，name,password
 password存哈希值，Hash::make(666666);
 CREATE TABLE `admin` (
@@ -111,4 +112,7 @@ Route::prefix('/server')->middleware('auth.admin')->group(function () {
     });
 });
 
-项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
+
+
+api模块jwt登录验证
+前端请求，header里面加参数Authorization：值为token
