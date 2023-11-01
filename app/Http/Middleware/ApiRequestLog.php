@@ -17,7 +17,19 @@ class ApiRequestLog {
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next) {
-        requestLog('apilog');
-        return $next($request);
+        // 记录请求开始时间
+        $startTime = microtime(true);
+
+        // 执行下一个中间件或请求处理
+        $response = $next($request);
+
+        // 记录请求结束时间
+        $endTime = microtime(true);
+
+        $useTime = number_format(($endTime - $startTime) * 1000, 2);
+
+        requestLog($response->getStatusCode(), $useTime, $response->original, 'apilog');
+
+        return $response;
     }
 }
