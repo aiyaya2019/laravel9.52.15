@@ -3,7 +3,9 @@
 namespace App\Http;
 
 use App\Http\Middleware\AdminAuth;
+use App\Http\Middleware\AdminRequestLog;
 use App\Http\Middleware\ApiAuth;
+use App\Http\Middleware\ApiRequestLog;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -67,5 +69,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.admin' => AdminAuth::class,//后台admin鉴权中间件
         'auth.api' => ApiAuth::class,//api鉴权中间件
+        'admin.request.log' => AdminRequestLog::class,//后台请求日志中间件
+        'api.request.log' => ApiRequestLog::class,//api请求日志中间件
     ];
 }

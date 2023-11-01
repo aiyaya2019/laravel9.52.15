@@ -13,14 +13,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::middleware(['admin.request.log'])->get('/', function () {
     return view('welcome');
 });
 
-Route::match(['get', 'post'], 'server/login', [\App\Http\Controllers\Admin\LoginController::class, 'login']);
+Route::middleware(['admin.request.log'])->match(['get', 'post'], 'server/login', [\App\Http\Controllers\Admin\LoginController::class, 'login']);
 
 // 后台需要校验权限的接口
-Route::prefix('/server')->middleware('auth.admin')->group(function () {
+Route::prefix('/server')->middleware(['admin.request.log', 'auth.admin'])->group(function () {
     Route::match(['get', 'post'], 'logout', [\App\Http\Controllers\Admin\LoginController::class, 'logout']);
 
     Route::prefix('/banner')->group(function () {
@@ -30,7 +30,7 @@ Route::prefix('/server')->middleware('auth.admin')->group(function () {
 });
 
 // 不需校验权限的接口
-Route::prefix('/open')->group(function () {
+Route::prefix('/open')->middleware(['admin.request.log'])->group(function () {
     Route::prefix('/banner')->group(function () {
         Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Open\BannerController::class, 'list']);
     });

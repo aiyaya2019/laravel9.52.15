@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::match(['get', 'post'], '/v1/login/login', [\App\Http\Controllers\Api\V1\LoginController::class, 'login']);
+Route::middleware(['api.request.log'])->match(['get', 'post'], '/v1/login/login', [\App\Http\Controllers\Api\V1\LoginController::class, 'login']);
 
-Route::prefix('/v1')->middleware(['auth.api'])->group(function () {
+Route::prefix('/v1')->middleware(['api.request.log', 'auth.api'])->group(function () {
     Route::match(['get', 'post'], 'login/logout', [\App\Http\Controllers\Api\V1\LoginController::class, 'logout']);
 
     Route::prefix('banner')->group(function () {
@@ -26,7 +26,7 @@ Route::prefix('/v1')->middleware(['auth.api'])->group(function () {
     });
 });
 
-Route::prefix('/v1')->group(function () {
+Route::prefix('/v1')->middleware(['api.request.log'])->group(function () {
     Route::prefix('open')->group(function () {
         Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Api\V1\OpenController::class, 'list']);
         Route::match(['get', 'post'], 'add', [\App\Http\Controllers\Api\V1\OpenController::class, 'add']);

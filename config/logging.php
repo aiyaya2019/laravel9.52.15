@@ -138,7 +138,7 @@ return [
         // 后台接口请求日志
         'adminlog' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/api/admin-request.log'),
+            'path' => storage_path('logs/admin/admin-request.log'),
             'level' => 'info',
             'days' => 15,
             'permission' => 0777,
