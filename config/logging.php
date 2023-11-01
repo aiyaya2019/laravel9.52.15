@@ -118,11 +118,37 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // sql日志
         'sqllog' => [
             'driver' => 'daily',
             'path' => storage_path('logs/sql/sql.log'),
             'level' => 'info',
-            'days' => 30,
+            'days' => 15,
+            'permission' => 0777,
+        ],
+
+        // api请求日志
+        'apilog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api/api-request.log'),
+            'level' => 'info',
+            'days' => 15,
+            'permission' => 0777,
+        ],
+        // 后台接口请求日志
+        'adminlog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api/admin-request.log'),
+            'level' => 'info',
+            'days' => 15,
+            'permission' => 0777,
+        ],
+        // 普通日志记录，排查bug用
+        'recordlog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api/record.log'),
+            'level' => 'info',
+            'days' => 15,
             'permission' => 0777,
         ],
     ],
