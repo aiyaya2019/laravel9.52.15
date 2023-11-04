@@ -24,7 +24,7 @@ class BaseModel extends Model {
      * @param $condition1 = 'deleted = 0'; //原生
      * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
     public function getTotal($condition = []) {
         $where = $this->whereHandle($condition);
@@ -40,6 +40,11 @@ class BaseModel extends Model {
                 if (!empty($where['whereIn'])) {
                     foreach ($where['whereIn'] as $key => $value) {
                         $query->whereIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereNotIn'])) {
+                    foreach ($where['whereNotIn'] as $key => $value) {
+                        $query->whereNotIn($key, $value);
                     }
                 }
                 if (!empty($where['whereLike'])) {
@@ -71,7 +76,7 @@ class BaseModel extends Model {
      * @param $condition1 = 'deleted = 0'; //原生
      * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
     public function getAll($condition = [], $fields = '*', string $orderBy = '', int $limit = 0, string $groupBy = '', bool $toArray = true) {
         $where = $this->whereHandle($condition);
@@ -87,6 +92,11 @@ class BaseModel extends Model {
                 if (!empty($where['whereIn'])) {
                     foreach ($where['whereIn'] as $key => $value) {
                         $query->whereIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereNotIn'])) {
+                    foreach ($where['whereNotIn'] as $key => $value) {
+                        $query->whereNotIn($key, $value);
                     }
                 }
                 if (!empty($where['whereLike'])) {
@@ -129,7 +139,7 @@ class BaseModel extends Model {
      * @param $condition1 = 'deleted = 0'; //原生
      * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
     public function getOne($condition = [], $fields = '*', string $orderBy = '', bool $toArray = true) {
         $where = $this->whereHandle($condition);
@@ -145,6 +155,11 @@ class BaseModel extends Model {
                 if (!empty($where['whereIn'])) {
                     foreach ($where['whereIn'] as $key => $value) {
                         $query->whereIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereNotIn'])) {
+                    foreach ($where['whereNotIn'] as $key => $value) {
+                        $query->whereNotIn($key, $value);
                     }
                 }
                 if (!empty($where['whereLike'])) {
@@ -182,7 +197,7 @@ class BaseModel extends Model {
      * @param $condition1 = 'deleted = 0'; //原生
      * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
     public function getFieldColumn($condition = [], string $field = 'id', string $orderBy = '', bool $isDistinct = true, int $limit = 0) {
         $where = $this->whereHandle($condition);
@@ -197,6 +212,11 @@ class BaseModel extends Model {
                 if (!empty($where['whereIn'])) {
                     foreach ($where['whereIn'] as $key => $value) {
                         $query->whereIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereNotIn'])) {
+                    foreach ($where['whereNotIn'] as $key => $value) {
+                        $query->whereNotIn($key, $value);
                     }
                 }
                 if (!empty($where['whereLike'])) {
@@ -234,7 +254,7 @@ class BaseModel extends Model {
      * @param $condition1 = 'deleted = 0'; //原生
      * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
     public function getValue($condition = [], string $field = 'id', string $orderBy = '') {
         $where = $this->whereHandle($condition);
@@ -249,6 +269,11 @@ class BaseModel extends Model {
                 if (!empty($where['whereIn'])) {
                     foreach ($where['whereIn'] as $key => $value) {
                         $query->whereIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereNotIn'])) {
+                    foreach ($where['whereNotIn'] as $key => $value) {
+                        $query->whereNotIn($key, $value);
                     }
                 }
                 if (!empty($where['whereLike'])) {
@@ -279,7 +304,7 @@ class BaseModel extends Model {
      * @param $condition1 = 'deleted = 0'; //原生
      * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
     public function singleSave($condition, array $data) {
         if (empty($condition)) {
@@ -300,6 +325,11 @@ class BaseModel extends Model {
                 if (!empty($where['whereIn'])) {
                     foreach ($where['whereIn'] as $key => $value) {
                         $query->whereIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereNotIn'])) {
+                    foreach ($where['whereNotIn'] as $key => $value) {
+                        $query->whereNotIn($key, $value);
                     }
                 }
                 if (!empty($where['whereLike'])) {
@@ -328,7 +358,7 @@ class BaseModel extends Model {
      * @param $condition1 = 'deleted = 0'; //原生
      * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
     public function singleDelete($condition, bool $isSoftDelete = false, bool $isUpdateTime = true) {
         if (empty($condition)) {
@@ -346,6 +376,11 @@ class BaseModel extends Model {
             if (!empty($where['whereIn'])) {
                 foreach ($where['whereIn'] as $key => $value) {
                     $query->whereIn($key, $value);
+                }
+            }
+            if (!empty($where['whereNotIn'])) {
+                foreach ($where['whereNotIn'] as $key => $value) {
+                    $query->whereNotIn($key, $value);
                 }
             }
             if (!empty($where['whereLike'])) {
@@ -387,6 +422,7 @@ class BaseModel extends Model {
         $whereRaw = '';//原生条件
         $where = [];//
         $whereIn = [];
+        $whereNotIn = [];
         $whereLike = [];
 
         !is_array($condition) && $whereRaw = $condition;
@@ -400,8 +436,13 @@ class BaseModel extends Model {
                         if (!is_array($value[2])) {
                             $where[] = [$value[0], $value[1], $value[2]];//['deleted', '=', 0]
                         } else {
-                            $value[1] == 'like' && !empty($value[0]) && $whereLike[] = $value;//[ ['name', 'like', ['q', 'w']] ]
-                            $value[1] != 'like' && $whereIn[$value[0]] = $value[2];//[ ['id', 'in', $ids] ]
+                            if (strtolower($value[1]) == 'like') {
+                                !empty($value[0]) && $whereLike[] = $value;//[ ['name', 'like', ['q', 'w']] ]
+                            } else {
+                                strtolower($value[1]) == 'in' && $whereIn[$value[0]] = $value[2];//[ ['id', 'in', $ids] ]
+                                strtolower($value[1]) == 'not in' && $whereNotIn[$value[0]] = $value[2];//[ ['id', 'not in', $ids] ]
+                            }
+
                         }
                     } else {
                         $whereIn[$key] = $value;
@@ -414,6 +455,7 @@ class BaseModel extends Model {
             'whereRaw' => $whereRaw,
             'where' => $where,
             'whereIn' => $whereIn,
+            'whereNotIn' => $whereNotIn,
             'whereLike' => $whereLike,
         ];
     }

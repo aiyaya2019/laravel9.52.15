@@ -17,7 +17,7 @@ class BannerController extends AdminBaseController {
 
     public function list() {
         // returnData(200, '操作成功', 5, $data = [1,2,3,4,5]);
-        return response()->json(['code' => 300, 'msg' => '1234', 'total'=>3, 'data' => [1,2,3]]);
+        // return response()->json(['code' => 300, 'msg' => '1234', 'total'=>3, 'data' => [1,2,3]]);
         // echo 2;exit;
         $data = $this->logic->list();
     }
