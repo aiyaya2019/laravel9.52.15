@@ -28,7 +28,9 @@ class ApiRequestLog {
 
         $useTime = number_format(($endTime - $startTime) * 1000, 2);
 
-        requestLog($response->getStatusCode(), $useTime, $response->original, 'apilog');
+        $reqData = $response->original ?? [];
+
+        requestLog($response->getStatusCode(), $useTime, $reqData, 'apilog');
 
         return $response;
     }

@@ -28,7 +28,9 @@ class AdminRequestLog {
 
         $useTime = number_format(($endTime - $startTime) * 1000, 2);
 
-        requestLog($response->getStatusCode(), $useTime, $response->original);
+        $reqData = $response->original ?? [];
+
+        requestLog($response->getStatusCode(), $useTime, $reqData);
 
         return $response;
     }

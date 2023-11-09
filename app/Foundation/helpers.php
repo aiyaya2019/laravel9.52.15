@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Log;
+use Rtgm\sm\RtSm2;
+use App\Http\Common\Constant;
 
 /**
  * 对象转数组
@@ -60,6 +62,32 @@ function requestLog(int $reqStatus, string $useTime = '', array $returnData = []
     }
 
     return true;
+}
+
+/**
+ * @Desc:sm2加密
+ * @param string $string 待加密明文
+ * @return mixed
+ * @author: wanf
+ * @Time: 2023/11/9 13:56
+ */
+function sm2Encrypt(string $string) {
+    $sm2 = new RtSm2('base64', false);
+
+    return $sm2->doEncrypt($string, Constant::SM2_PUBLIC_KEY);
+}
+
+/**
+ * @Desc:sm2解密
+ * @param string $string 待解密密文
+ * @return mixed
+ * @author: wanf
+ * @Time: 2023/11/9 13:56
+ */
+function sm2Decrypt(string $string) {
+    $sm2 = new RtSm2('base64', false);
+
+    return $sm2->doDecrypt($string, Constant::SM2_PRIVATE_KEY);
 }
 
 
