@@ -13,6 +13,9 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
+/**
+ * 多工作簿导出类
+ */
 class MoreSheetExport implements WithHeadings, FromCollection, WithTitle, WithColumnWidths, WithStyles, WithColumnFormatting, WithMultipleSheets{
     use Exportable;
 

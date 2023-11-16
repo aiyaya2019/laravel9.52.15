@@ -14,6 +14,9 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
+/**
+ * 简单导出类
+ */
 class SampleExport implements WithHeadings, FromCollection, WithTitle, WithColumnWidths, WithStyles, WithColumnFormatting{
     use Exportable;
 
