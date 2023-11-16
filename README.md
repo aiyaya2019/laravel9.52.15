@@ -67,6 +67,9 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
 
+安装3.*以上版本maatwebsite/excel：
+composer require maatwebsite/excel --update-with-dependencies
+
 admin模块登录验证
 用admin表验证登录，name,password
 password存哈希值，Hash::make(666666);
