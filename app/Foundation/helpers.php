@@ -19,17 +19,16 @@ function objectToArray($object) {
  * msg 提示信息
  * total 数据总数
  * data 数据
- * @return array
+ * @return array|\Illuminate\Http\JsonResponse
  */
 function returnData($code = 200, $msg = '操作成功', $total = 0, $data = []) {
-    // echo json_encode([
-    //     'code' => $code,
-    //     'msg' => $msg,
-    //     'total' => $total,
-    //     'data' => $data,
-    // ]);exit;
 
-    return response()->json(['code' => $code, 'msg' =>$msg, $total, $data]);
+    return response()->json([
+        'code' => $code,
+        'msg' => $msg,
+        'total' => $total,
+        'data' => $data,
+    ]);
 }
 
 /**
@@ -43,6 +42,11 @@ function returnData($code = 200, $msg = '操作成功', $total = 0, $data = []) 
  * @Time: 2023/11/1 21:41
  */
 function requestLog(int $reqStatus, string $useTime = '', array $returnData = [], string $model = 'adminlog') {
+    $params = request()->all();
+    if (isset($params['s'])) {
+        unset($params['s']);
+    }
+
     $data = [
         'method' => request()->method(),//请求方式
         'port' => request()->getPort(),//端口
@@ -51,7 +55,7 @@ function requestLog(int $reqStatus, string $useTime = '', array $returnData = []
         'return_code' => $returnData['code'] ?? '',//返回状态码：200成功，201成功弹出确认窗口，300去登录，400失败
         'return_msg' => $returnData['msg'] ?? '',//返回信息提示
         'return_data' => env('LOG_RECORD_RETURN_DATA') == 1 ? $returnData : '不记录返回数据',//返回数据
-        'params' => request()->all(),//请求参数
+        'params' => $params,//请求参数
         'header' => env('LOG_HEADER_FORMAT') == 1 ? request()->header() : json_encode(request()->header()),
     ];
 
