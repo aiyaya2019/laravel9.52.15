@@ -48,8 +48,8 @@ function requestLog(int $reqStatus, string $useTime = '', array $returnData = []
         'port' => request()->getPort(),//端口
         'ip' => request()->ip(),//ip
         'url' => request()->url(),//url
-        'return_code' => $returnData['code'],//返回状态码：200成功，201成功弹出确认窗口，300去登录，400失败
-        'return_msg' => $returnData['msg'],//返回信息提示
+        'return_code' => $returnData['code'] ?? '',//返回状态码：200成功，201成功弹出确认窗口，300去登录，400失败
+        'return_msg' => $returnData['msg'] ?? '',//返回信息提示
         'return_data' => env('LOG_RECORD_RETURN_DATA') == 1 ? $returnData : '不记录返回数据',//返回数据
         'params' => request()->all(),//请求参数
         'header' => env('LOG_HEADER_FORMAT') == 1 ? request()->header() : json_encode(request()->header()),
