@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Demo;
 
 use App\Http\Controllers\Controller;
+use App\Http\Excel\MoreImgExport;
 use App\Http\Excel\MoreSheetExport;
 use App\Http\Excel\SampleExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -153,7 +154,49 @@ class ExportController extends Controller {
         ];
 
         return Excel::download(new MoreSheetExport($data, '', $data['cusromer_warning']['data']), '多工作簿导出.xls');
+    }
 
+    /**
+     * @Desc:多个单元格中导出图片
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @author: wanf
+     * @Time: 2023/11/17 8:48
+     */
+    public function moreImgExport() {
+        $data = [
+            [
+                'username' => 'c5',
+                'id' => '665',
+                'status' => '已签到',
+                'sign_time' => '2023-11-16 19:57:00',
+                'sign_start_time' => '2023-11-16 19:56:44',
+                'terminal_name' => 't5',
+                'room_name' => 'xxp',
+                'sign_file' => 'D:/phpstudy_pro/WWW/laravel9.52.15/public/imgs/1.jpeg',
+            ],
+            [
+                'username' => 'admin05',
+                'id' => '664',
+                'status' => '未签到',
+                'sign_time' => '',
+                'sign_start_time' => '2023-11-16 19:56:44',
+                'terminal_name' => 't5',
+                'room_name' => 'xxp',
+                'sign_file' => '',
+            ],
+            [
+                'username' => 'c5',
+                'id' => '665',
+                'status' => '已签到',
+                'sign_time' => '2023-11-16 19:57:00',
+                'sign_start_time' => '2023-11-16 19:56:44',
+                'terminal_name' => 't5',
+                'room_name' => 'xxp',
+                'sign_file' => 'D:\phpstudy_pro\WWW\laravel9.52.15\public\imgs\1.jpg',
+            ],
+        ];
+
+        return Excel::download(new MoreImgExport($data), '多个单元格中导出图片.xls');
     }
 
 }
