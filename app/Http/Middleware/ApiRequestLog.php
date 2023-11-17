@@ -23,6 +23,11 @@ class ApiRequestLog {
         // 执行下一个中间件或请求处理
         $response = $next($request);
 
+        // 1记录全部日志；2仅记录admin后台日志；3仅记录api接口日志；4不记录日志
+        if (!in_array(env('RECORD_LOG'), [1, 3])) {
+            return $response;
+        }
+
         // 记录请求结束时间
         $endTime = microtime(true);
 
