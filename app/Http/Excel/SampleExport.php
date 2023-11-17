@@ -34,8 +34,7 @@ class SampleExport implements WithHeadings, FromCollection, WithTitle, WithColum
      * @return string[]
      */
     public function headings(): array {
-        $language = config('app.locale');
-        if ($language == 'cn') {
+        if (env('DEFAULT_LANGUAGE') == 'cn') {
             $header = ['昵称）', '用户名', '账号', '手机号', '时间'];
         } else {
             $header = ['Nickname', 'username', 'Account', 'Phone', 'Time'];

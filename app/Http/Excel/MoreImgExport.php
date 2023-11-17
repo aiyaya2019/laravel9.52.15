@@ -38,8 +38,7 @@ class MoreImgExport implements WithHeadings, FromCollection, WithTitle, WithColu
      * @return string[]
      */
     public function headings(): array {
-        $language = config('app.locale');
-        if ($language == 'cn') {
+        if (env('DEFAULT_LANGUAGE') == 'cn') {
             $header = ['姓名', '会议室', '终端编号', '状态', '开启签到时间', '签到时间', '签到凭证'];
         } else {
             $header = ['Name', 'Meeting Room', 'Terminal ID', 'Status', 'Start time', 'Sign-in time', 'Sign-in evidence'];
