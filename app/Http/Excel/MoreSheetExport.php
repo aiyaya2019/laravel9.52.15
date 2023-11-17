@@ -100,6 +100,7 @@ class MoreSheetExport implements WithHeadings, FromCollection, WithTitle, WithCo
 
         $row = 2;
 
+        // 合并单元格
         foreach ($this->sheetData as $value) {
             $endRow = $row + $value['row_num'] - 1;
             $sheet->mergeCells("A$row:A$endRow");
