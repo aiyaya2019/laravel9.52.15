@@ -14,20 +14,22 @@ function objectToArray($object) {
 }
 
 /**
- * 返回数据给前端
- * code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败
- * msg 提示信息
- * total 数据总数
- * data 数据
- * @return array|\Illuminate\Http\JsonResponse
+ * @Desc:返回数据给前端
+ * @param $code code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败
+ * @param $msg 提示信息
+ * @param $data 数据
+ * @param $errMsg 错误详情
+ * @return \Illuminate\Http\JsonResponse
+ * @author: wanf
+ * @Time: 2023/11/18 9:01
  */
-function returnData($code = 200, $msg = '操作成功', $total = 0, $data = []) {
+function returnData($code = 200, $msg = '操作成功', $data = [], $errMsg = '') {
 
     return response()->json([
         'code' => $code,
         'msg' => $msg,
-        'total' => $total,
         'data' => $data,
+        'err_msg' => $errMsg,
     ]);
 }
 
@@ -66,6 +68,10 @@ function requestLog(int $reqStatus, string $useTime = '', array $returnData = []
     }
 
     return true;
+}
+
+function handleErrorData($exception) {
+    return sprintf('%s(%s)：%s', $exception->getFile(), $exception->getLine(), $exception->getMessage());
 }
 
 /**

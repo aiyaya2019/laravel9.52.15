@@ -23,6 +23,10 @@ Route::middleware(['admin.request.log'])->match(['get', 'post'], 'server/login',
 Route::prefix('/server')->middleware(['admin.request.log', 'auth.admin'])->group(function () {
     Route::match(['get', 'post'], 'logout', [\App\Http\Controllers\Admin\LoginController::class, 'logout']);
 
+    Route::prefix('/admin')->group(function () {
+        Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Admin\AdminController::class, 'list']);
+    });
+
     Route::prefix('/user')->group(function () {
         Route::match(['get', 'post'], 'export', [\App\Http\Controllers\Admin\UserController::class, 'export']);
     });
