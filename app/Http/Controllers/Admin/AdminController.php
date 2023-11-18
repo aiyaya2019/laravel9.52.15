@@ -18,11 +18,17 @@ class AdminController extends AdminBaseController {
         $this->logic = new AdminLogic();
     }
 
+    /**
+     * @Desc:
+     * @return \Illuminate\Http\JsonResponse
+     * @author: wanf
+     * @Time: 2023/11/18 10:19
+     */
     public function list() {
         try {
             $result = $this->logic->list();
 
-            return returnData(200, '操作成功', $result);
+            return returnData(200, __('lang.success'), $result);
 
         } catch (Exception $exception) {
             return returnData($exception->getCode(), $exception->getMessage(), [], handleErrorData($exception));

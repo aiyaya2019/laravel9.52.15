@@ -65,11 +65,15 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
+
+安装注意事项：
 项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
 
-安装3.*以上版本maatwebsite/excel：
-composer require maatwebsite/excel --update-with-dependencies
+如果没有maatwebsite/excel依赖，就安装3.*以上版本maatwebsite/excel，命令：composer require maatwebsite/excel --update-with-dependencies
 
+
+
+登录验证说明：
 admin模块登录验证
 用admin表验证登录，name,password
 password存哈希值，Hash::make(666666);
@@ -83,7 +87,6 @@ CREATE TABLE `admin` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 config/auth.php配置
 1、guards加
@@ -115,7 +118,10 @@ Route::prefix('/server')->middleware('auth.admin')->group(function () {
     });
 });
 
-
-
+token使用：
 api模块jwt登录验证
 前端请求，header里面加参数Authorization：值为token
+
+
+多语言：
+使用lang/cn/lang.php 或 lang/en/lang.php的配置。如果英文环境中没有某个给定的字符串翻译时，会默认使用cn的翻译(config/app.php中有配置：'fallback_locale' => 'cn')。

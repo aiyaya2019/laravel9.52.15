@@ -29,7 +29,7 @@ class AdminLogic extends BaseLogic {
             $list = $this->model->getAll();
 
             if (empty($list)) {
-                throw new \ErrorException('暂无数据', 400);
+                throw new \ErrorException(__('lang.error'), 400);
             }
         }
 
