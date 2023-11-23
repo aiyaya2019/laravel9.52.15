@@ -119,3 +119,111 @@ function cancelResponseDetails($response) {
 }
 
 
+function curlRequest(string $url, string $method, $params = null, $headers = [], $cookie = '', $returnCookie = 0){
+
+    $method = strtoupper($method);
+
+    empty($headers) && $headers = [
+        'Content-Type: application/json; charset=utf-8',
+        'Content-Length:' . strlen($params),
+        'Cache-Control: no-cache',
+        'Pragma: no-cache'
+    ];
+
+    $curl = curl_init();// 初始化 cURL
+
+    curl_setopt($curl, CURLOPT_URL, $url);//设置请求url
+    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);//设置是否自动跟随重定向。如果启用了这个选项，cURL 将自动遵循服务器返回的任何重定向
+    curl_setopt($curl, CURLOPT_AUTOREFERER, true);//设置是否在重定向时自动设置 Referer 头。如果启用了这个选项，cURL 将在发生重定向时，自动将上一个请求的 URL 作为 Referer 头部添加到下一个请求。默认情况下，CURLOPT_AUTOREFERER 是启用的，这意味着 cURL 在进行重定向时会自动设置 Referer 头。这对于模拟浏览器行为时很有用，因为浏览器通常在发起请求时会自动设置 Referer 头
+    curl_setopt($curl, CURLOPT_REFERER, "http://XXX");//设置请求的 Referer（引用页）头。Referer 头部表示请求的来源页面，即请求是从哪个页面发起的。
+    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);//设置与服务器建立连接的超时时间。该选项定义了 cURL 尝试连接到服务器的最长时间，超过这个时间则认为连接失败。
+    curl_setopt($curl, CURLOPT_TIMEOUT, 7);//设置整个 cURL 操作的最长时间。它包括连接和传输的所有时间，如果在设置的时间内未完成整个操作，cURL 将被终止。
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);//设置是否返回响应内容
+
+    switch ($method) {
+        case 'POST':
+            curl_setopt($curl, CURLOPT_POST, true);//设置 cURL 请求的 HTTP 请求方法。1 表示启用 POST 请求方法。如果设置为 0，则表示禁用 POST 方法，采用其他默认的请求方法（如 GET）。当 CURLOPT_POST 被设置为 1 时，通常需要使用 CURLOPT_POSTFIELDS 设置 POST 请求的数据
+            if (!empty($params)) {
+                // http_build_query()构建 URL 查询字符串的函数。它将一个关联数组转换为 URL 查询字符串的形式，以便在 URL 中传递参数。这个函数非常方便，特别是在构建 HTTP GET 请求时。输出例如name=John+Doe&age=30&city=New+York
+                $dataStr = is_array($params) ? http_build_query($params) : $params;
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $dataStr);//设置请求参数
+            }
+            break;
+        default:
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);//设置请求方法
+            break;
+    }
+
+    if($cookie) {
+        curl_setopt($curl, CURLOPT_COOKIE, $cookie);//设置 HTTP 请求的 Cookie。通过设置这个选项，你可以在 cURL 请求中包含特定的 Cookie。
+        curl_setopt($curl, CURLOPT_HEADER, $returnCookie);//用于控制是否将 HTTP 响应头一同输出。如果启用这个选项，cURL 将把 HTTP 响应头和响应体一同返回，你可以通过 curl_exec() 获取完整的响应，包括头部和内容。
+    }
+
+    curl_setopt($curl, CURLOPT_MAXREDIRS, 2);// 设置最大重定向次数为2
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);//设置请求头
+    curl_setopt($curl, CURLINFO_HEADER_OUT, true);// 启用输出 HTTP 头部。可在 curl_getinfo() 函数中获取请求的头部信息。
+
+    $response = curl_exec($curl);//执行 cURL 请求
+
+    // curl_getinfo() 函数用于获取 cURL 句柄的信息。你可以使用这个函数来获取有关最近一次 cURL 请求的详细信息，包括请求头、响应头、响应码、总时间等。
+    curl_getinfo($curl);
+    curl_getinfo($curl, CURLINFO_HTTP_CODE);//获取响应的 HTTP 状态码
+
+    curl_close($curl);//关闭 cURL 资源
+
+    if ($returnCookie) {
+        list($header, $body) = explode("\r\n\r\n", $response, 2);
+        preg_match_all("/Set\-Cookie:([^;]*);/", $header, $matches);
+        $result['cookie']  = substr($matches[1][0], 1);
+        $result['content'] = $body;
+        return $result;
+
+    } else {
+        return $response;
+    }
+}
+
+/**
+ * PHP发送Json对象数据
+ * @param $url 请求url
+ * @param $data 发送的json字符串/数组
+ * @return array
+ */
+function jsonPost($url, $data = NULL) {
+
+    // 初始化 cURL
+    $curl = curl_init();
+
+    curl_setopt($curl, CURLOPT_URL, $url);//设置请求url
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//控制是否验证对等证书。当启用时，cURL 将验证远程服务器的 SSL 证书。
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);//控制是否验证主机名。当启用时，cURL 将验证远程服务器的 SSL 证书中的主机名是否与请求的主机名匹配。
+    if(!$data){
+        return 'data is null';
+    }
+
+    is_array($data) && $data = json_encode($data);
+
+    curl_setopt($curl, CURLOPT_POST, 1);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);//设置请求参数
+    curl_setopt($curl, CURLOPT_HEADER, 0);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json; charset=utf-8',
+        'Content-Length:' . strlen($data),
+        'Cache-Control: no-cache',
+        'Pragma: no-cache'
+    ]);//设置请求头
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);//设置是否返回响应内容
+
+    $response = curl_exec($curl);//执行 cURL 请求
+
+    $errorno = curl_errno($curl);
+    if ($errorno) {
+        return $errorno;
+    }
+    curl_close($curl);//关闭 cURL 资源
+    return $response;
+}
+
+
+
+

@@ -51,3 +51,7 @@ Route::prefix('/open')->middleware(['admin.request.log'])->group(function () {
 Route::get('demo/export/{action}', function(App\Http\Controllers\Demo\ExportController $index, $action){
     return $index->$action();
 });
+
+Route::middleware(['admin.request.log'])->match(['get', 'post'],'demo/test/{action}', function(App\Http\Controllers\Demo\TestController $index, $action){
+    return $index->$action();
+});
