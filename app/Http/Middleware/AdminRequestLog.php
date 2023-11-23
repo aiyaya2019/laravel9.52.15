@@ -25,6 +25,9 @@ class AdminRequestLog {
 
         // 1记录全部日志；2仅记录admin后台日志；3仅记录api接口日志；4不记录日志
         if (!in_array(env('RECORD_LOG'), [1, 2])) {
+            // 取消响应中的错误详情信息
+            env('CANCEL_RESPONSE_ERR_DETAILS') && $response = cancelResponseDetails($response);
+
             return $response;
         }
 
@@ -37,6 +40,10 @@ class AdminRequestLog {
 
         requestLog($response->getStatusCode(), $useTime, $reqData);
 
+        // 取消响应中的错误详情信息
+        env('CANCEL_RESPONSE_ERR_DETAILS') && $response = cancelResponseDetails($response);
+
         return $response;
     }
+
 }

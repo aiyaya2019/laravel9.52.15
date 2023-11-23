@@ -18,18 +18,18 @@ function objectToArray($object) {
  * @param $code code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败
  * @param $msg 提示信息
  * @param $data 数据
- * @param $errMsg 错误详情
+ * @param $errDetails 错误详情
  * @return \Illuminate\Http\JsonResponse
  * @author: wanf
  * @Time: 2023/11/18 9:01
  */
-function returnData($code = 200, $msg = '操作成功', $data = [], $errMsg = '') {
+function returnData($code = 200, $msg = '操作成功', $data = [], $errDetails = '') {
 
     return response()->json([
         'code' => $code,
         'msg' => $msg,
         'data' => $data,
-        'err_msg' => $errMsg,
+        'err_details' => $errDetails,
     ]);
 }
 
@@ -100,6 +100,18 @@ function sm2Decrypt(string $string) {
     return $sm2->doDecrypt($string, Constant::SM2_PRIVATE_KEY);
 }
 
+/**
+ * @Desc:取消响应中的错误详情信息，中间件中记录详细日志需用到err_details字段，可设置不返回给前端
+ * @param $response
+ * @author: wanf
+ * @Time: 2023/11/23 11:03
+ */
+function cancelResponseDetails($response) {
+    $responseData = $response->getData();
+    unset($responseData->err_details);
+    $response->setData($responseData);
 
+    return $response;
+}
 
 
