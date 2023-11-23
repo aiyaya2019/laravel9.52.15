@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -44,7 +45,11 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            // 不生效
+            if ($e instanceof \Illuminate\Database\QueryException) {
+                // 捕获数据库查询异常并记录日志
+                Log::channel('sqllog')->info($e->getMessage());
+            }
         });
     }
 }

@@ -23,7 +23,11 @@ function objectToArray($object) {
  * @author: wanf
  * @Time: 2023/11/18 9:01
  */
-function returnData($code = 200, $msg = '操作成功', $data = [], $errDetails = '') {
+function returnData($code = 200, $msg = '操作成功', $data = [], $errDetails = '', $exception = null) {
+    if ($exception instanceof \Illuminate\Database\QueryException) {
+        // sql异常，不返回具体异常信息给前端，可到日志中查看具体异常信息 err_details
+        $msg = __('lang.error');
+    }
 
     return response()->json([
         'code' => $code,

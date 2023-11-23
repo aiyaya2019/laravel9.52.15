@@ -31,7 +31,7 @@ class AdminController extends AdminBaseController {
             return returnData(200, __('lang.success'), $result);
 
         } catch (Exception $exception) {
-            return returnData($exception->getCode(), $exception->getMessage(), [], handleErrorData($exception));
+            return returnData($exception->getCode(), $exception->getMessage(), [], handleErrorData($exception), $exception);
         }
     }
 
