@@ -15,8 +15,7 @@ class BannerLogic extends BaseLogic {
 
     public function list() {
         $data = $this->model->getAll();
-        echo '<pre>';
-        print_r($data);exit;
+        return $data;
     }
 
 

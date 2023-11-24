@@ -14,9 +14,25 @@ class OpenController extends ApiBaseController {
     }
 
     public function list() {
+        recordLog(1);
+        $params = [
+            [
+                'name' => '姓名',
+                'phone' => '13122222222',
+            ],
+            [
+                'name' => '姓名',
+                'phone' => '13122222222',
+            ],
+        ];
+
+        recordLog(1, $params);
+
         $data = $this->logic->list();
-        echo 2;exit;
+
+        return returnData(200, __('lang.success'), $data);
     }
+
     public function add() {
         echo 'add';exit;
     }

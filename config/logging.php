@@ -130,25 +130,34 @@ return [
         // api请求日志
         'apilog' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/api/api-request.log'),
+            'path' => storage_path('logs/api/request/api-request.log'),
             'level' => 'info',
-            'days' => 15,
+            'days' => 5,
             'permission' => 0777,
         ],
+        // api普通日志记录，排查bug用
+        'apirecordlog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api/record/api-record.log'),
+            'level' => 'info',
+            'days' => 5,
+            'permission' => 0777,
+        ],
+
         // 后台接口请求日志
         'adminlog' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/admin/admin-request.log'),
+            'path' => storage_path('logs/admin/request/admin-request.log'),
             'level' => 'info',
-            'days' => 15,
+            'days' => 5,
             'permission' => 0777,
         ],
-        // 普通日志记录，排查bug用
-        'recordlog' => [
+        // 后台普通日志记录，排查bug用
+        'adminrecordlog' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/api/record.log'),
+            'path' => storage_path('logs/admin/record/admin-record.log'),
             'level' => 'info',
-            'days' => 15,
+            'days' => 5,
             'permission' => 0777,
         ],
     ],

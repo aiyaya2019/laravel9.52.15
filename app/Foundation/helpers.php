@@ -38,70 +38,14 @@ function returnData($code = 200, $msg = '操作成功', $data = [], $errDetails 
 }
 
 /**
- * @Desc:记录请求日志
- * @param int $reqStatus 接口请求状态
- * @param string $useTime 接口用时
- * @param array $returnData 返回数据
- * @param string $model 日志通道
- * @return bool
+ * @Desc:拼接详细报错信息
+ * @param $exception
+ * @return string
  * @author: wanf
- * @Time: 2023/11/1 21:41
+ * @Time: 2023/11/24 14:46
  */
-function requestLog(int $reqStatus, string $useTime = '', array $returnData = [], string $model = 'adminlog') {
-    $params = request()->all();
-    if (isset($params['s'])) {
-        unset($params['s']);
-    }
-
-    $data = [
-        'method' => request()->method(),//请求方式
-        'port' => request()->getPort(),//端口
-        'ip' => request()->ip(),//ip
-        'url' => request()->url(),//url
-        'return_code' => $returnData['code'] ?? '',//返回状态码：200成功，201成功弹出确认窗口，300去登录，400失败
-        'return_msg' => $returnData['msg'] ?? '',//返回信息提示
-        'return_data' => env('LOG_RECORD_RETURN_DATA') == 1 ? $returnData : '不记录返回数据',//返回数据
-        'params' => $params,//请求参数
-        'header' => env('LOG_HEADER_FORMAT') == 1 ? request()->header() : json_encode(request()->header()),
-    ];
-
-    if (env('LOG_FORMAT') == 1) {
-        Log::channel($model)->info('reqStatus:'. $reqStatus .' useTime:' . $useTime .'ms  ' .print_r($data, true));
-    } else {
-        Log::channel($model)->info('reqStatus:'. $reqStatus .' useTime:' . $useTime .'ms  ' .json_encode($data));
-    }
-
-    return true;
-}
-
 function handleErrorData($exception) {
     return sprintf('%s(%s)：%s', $exception->getFile(), $exception->getLine(), $exception->getMessage());
-}
-
-/**
- * @Desc:sm2加密
- * @param string $string 待加密明文
- * @return mixed
- * @author: wanf
- * @Time: 2023/11/9 13:56
- */
-function sm2Encrypt(string $string) {
-    $sm2 = new RtSm2('base64', false);
-
-    return $sm2->doEncrypt($string, Constant::SM2_PUBLIC_KEY);
-}
-
-/**
- * @Desc:sm2解密
- * @param string $string 待解密密文
- * @return mixed
- * @author: wanf
- * @Time: 2023/11/9 13:56
- */
-function sm2Decrypt(string $string) {
-    $sm2 = new RtSm2('base64', false);
-
-    return $sm2->doDecrypt($string, Constant::SM2_PRIVATE_KEY);
 }
 
 /**
@@ -118,17 +62,122 @@ function cancelResponseDetails($response) {
     return $response;
 }
 
+/**
+ * @Desc:记录请求日志
+ * @param int $reqStatus 接口请求状态
+ * @param string $useTime 接口用时
+ * @param $returnData 返回数据
+ * @param string $model 日志通道
+ * @return bool
+ * @author: wanf
+ * @Time: 2023/11/1 21:41
+ */
+function requestLog(int $reqStatus, string $useTime = '', $returnData = null, string $model = 'adminlog') {
+    $params = request()->all();
+    if (isset($params['s'])) {
+        unset($params['s']);
+    }
 
-function curlRequest(string $url, string $method, $params = null, $headers = [], $cookie = '', $returnCookie = 0){
+    $data = [
+        'return_code' => $returnData['code'] ?? '',//返回状态码：200成功，201成功弹出确认窗口，300去登录，400失败
+        'return_msg' => $returnData['msg'] ?? '',//返回信息提示
+        'method' => request()->method(),//请求方式
+        'port' => request()->getPort(),//端口
+        'ip' => request()->ip(),//ip
+        'url' => request()->url(),//url
+        'return_data' => env('LOG_RECORD_RETURN_DATA') == 1 ? $returnData : '不记录返回数据',//返回数据
+        'req_params' => $params,//请求参数
+        'header' => env('LOG_HEADER_FORMAT') == 1 ? request()->header() : json_encode(request()->header(), JSON_UNESCAPED_UNICODE),
+    ];
+
+    if (env('LOG_FORMAT') == 1) {
+        // 数组形式
+        Log::channel($model)->info('reqStatus:'. $reqStatus .' useTime:' . $useTime .'ms  ' .print_r($data, true));
+
+    } elseif (env('LOG_FORMAT') == 2) {
+        // json形式
+        Log::channel($model)->info('reqStatus:'. $reqStatus .' useTime:' . $useTime .'ms  ' .json_encode($data), JSON_UNESCAPED_UNICODE);
+
+    } else {
+        // 其他
+        is_array($data['return_data']) && $data['return_data'] = json_encode($data['return_data'], JSON_UNESCAPED_UNICODE);
+        is_array($data['req_params']) && $data['req_params'] = json_encode($data['req_params'], JSON_UNESCAPED_UNICODE);
+        is_array($data['header']) && $data['header'] = json_encode($data['header'], JSON_UNESCAPED_UNICODE);
+
+        $log = sprintf('return_code:%s, return_msg:%s, method:%s, port:%s, ip:%s, url:%s, return_data: %s, req_params:%s, header:%s', $data['return_code'], $data['return_msg'], $data['method'], $data['port'], $data['ip'], $data['url'], $data['return_data'], $data['req_params'], $data['header']);
+        Log::channel($model)->info($log);
+    }
+
+    return true;
+}
+
+/**
+ * @Desc:admin、api普通日志记录，排查bug用
+ * @param int $code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败
+ * @param $data 需要记录的数据或信息
+ * @return bool
+ * @author: wanf
+ * @Time: 2023/11/24 14:44
+ */
+function recordLog(int $code, $data = null) {
+
+    $url = request()->url();
+
+    $model = 'adminrecordlog';
+
+    str_contains($url, '/api/') && $model = 'apirecordlog';
+
+    $logData = [
+        'code' => $code,
+        'url' => $url,//url
+        'return_data' => $data,
+    ];
+
+    if (env('RECORD_LOG_FORMAT') == 1) {
+        // 数组形式
+        Log::channel($model)->info(print_r($logData, true));
+
+    } elseif (env('RECORD_LOG_FORMAT') == 2) {
+        // json形式
+        Log::channel($model)->info(json_encode($logData, JSON_UNESCAPED_UNICODE));
+
+    } else {
+        // 其他
+        is_array($logData['return_data']) && $logData['return_data'] = json_encode($logData['return_data'], JSON_UNESCAPED_UNICODE);
+        $log = sprintf('code:%s, url:%s, return_data:%s', $logData['code'], $logData['url'], $logData['return_data']);
+        Log::channel($model)->info($log);
+    }
+
+    return true;
+}
+
+/**
+ * @Desc:curl请求
+ * @param string $url 请求url
+ * @param string $method 请求方式
+ * @param $params 请求参数
+ * @param $isJson 传参形式：true表示以json方式传递
+ * @param $headers 请求头
+ * @param $cookie cookie
+ * @param $returnCookie
+ * @return array|bool|string
+ * @author: wanf
+ * @Time: 2023/11/24 14:49
+ */
+function curlRequest(string $url, string $method, $params = null, $isJson = false, $headers = [], $cookie = '', $returnCookie = 0){
 
     $method = strtoupper($method);
 
-    empty($headers) && $headers = [
-        'Content-Type: application/json; charset=utf-8',
-        'Content-Length:' . strlen($params),
-        'Cache-Control: no-cache',
-        'Pragma: no-cache'
-    ];
+    // 参数以json格式发送
+    if ($isJson) {
+        is_array($params) && $params = json_encode($params);
+        $headers = [
+            'Content-Type: application/json; charset=utf-8',
+            'Content-Length:' . strlen($params),
+            'Cache-Control: no-cache',
+            'Pragma: no-cache'
+        ];
+    }
 
     $curl = curl_init();// 初始化 cURL
 
@@ -184,7 +233,7 @@ function curlRequest(string $url, string $method, $params = null, $headers = [],
 }
 
 /**
- * PHP发送Json对象数据
+ * curl请求。发送Json对象数据。和curlRequest($url, 'post', $params, true)用法 作用一样
  * @param $url 请求url
  * @param $data 发送的json字符串/数组
  * @return array
@@ -205,7 +254,7 @@ function jsonPost($url, $data = NULL) {
 
     curl_setopt($curl, CURLOPT_POST, 1);
     curl_setopt($curl, CURLOPT_POSTFIELDS, $data);//设置请求参数
-    curl_setopt($curl, CURLOPT_HEADER, 0);
+    curl_setopt($curl, CURLOPT_HEADER, 0);//用于控制是否将 HTTP 响应头一同输出。如果启用这个选项，cURL 将把 HTTP 响应头和响应体一同返回，你可以通过 curl_exec() 获取完整的响应，包括头部和内容。
     curl_setopt($curl, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json; charset=utf-8',
         'Content-Length:' . strlen($data),
@@ -221,7 +270,34 @@ function jsonPost($url, $data = NULL) {
         return $errorno;
     }
     curl_close($curl);//关闭 cURL 资源
+
     return $response;
+}
+
+/**
+ * @Desc:sm2加密
+ * @param string $string 待加密明文
+ * @return mixed
+ * @author: wanf
+ * @Time: 2023/11/9 13:56
+ */
+function sm2Encrypt(string $string) {
+    $sm2 = new RtSm2('base64', false);
+
+    return $sm2->doEncrypt($string, Constant::SM2_PUBLIC_KEY);
+}
+
+/**
+ * @Desc:sm2解密
+ * @param string $string 待解密密文
+ * @return mixed
+ * @author: wanf
+ * @Time: 2023/11/9 13:56
+ */
+function sm2Decrypt(string $string) {
+    $sm2 = new RtSm2('base64', false);
+
+    return $sm2->doDecrypt($string, Constant::SM2_PRIVATE_KEY);
 }
 
 

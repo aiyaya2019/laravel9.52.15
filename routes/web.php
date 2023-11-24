@@ -48,7 +48,7 @@ Route::prefix('/open')->middleware(['admin.request.log'])->group(function () {
 });
 
 // Demo\ExportController控制器路由入口
-Route::get('demo/export/{action}', function(App\Http\Controllers\Demo\ExportController $index, $action){
+Route::match(['get', 'post'],'demo/export/{action}', function(App\Http\Controllers\Demo\ExportController $index, $action){
     return $index->$action();
 });
 
