@@ -26,18 +26,20 @@ class AppServiceProvider extends ServiceProvider {
         // 监听数据库查询事件，但默认情况下，它只能监听查询的执行情况，无法直接捕获异常的 SQL 语句
         DB::listen(
             function ($query) {
+                $model = str_contains(request()->url(), '/api/') ? 'apisql' : 'adminsql';
+
                 $tmp = str_replace('?', '"' . '%s' . '"', $query->sql);
-                $qBindings = [];
+                $bindings = [];
                 foreach ($query->bindings as $key => $value) {
                     if (is_numeric($key)) {
-                        $qBindings[] = $value;
+                        $bindings[] = $value;
                     } else {
                         $tmp = str_replace(':' . $key, '"' . $value . '"', $tmp);
                     }
                 }
-                $tmp = vsprintf($tmp, $qBindings);
+                $tmp = vsprintf($tmp, $bindings);
                 $tmp = str_replace('\\', '', $tmp);
-                Log::channel('sqllog')->info('execution time: ' . $query->time . 'ms; ' . $tmp);
+                Log::channel($model)->info('execution time: ' . $query->time . 'ms; ' . $tmp);
             }
         );
     }

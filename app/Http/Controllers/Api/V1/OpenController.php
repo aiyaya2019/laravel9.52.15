@@ -2,33 +2,23 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\BusinessLogic\Admin\AdminLogic;
 use App\Http\BusinessLogic\Banner\BannerLogic;
 use App\Http\Controllers\Api\V1\ApiBaseController;
 use Illuminate\Http\Request;
 
 class OpenController extends ApiBaseController {
-    protected $logic;
+    protected $adminLogic;
 
     public function __construct() {
-        $this->logic = new BannerLogic();
+        $this->adminLogic = new AdminLogic();
     }
 
     public function list() {
         recordLog(1);
-        $params = [
-            [
-                'name' => '姓名',
-                'phone' => '13122222222',
-            ],
-            [
-                'name' => '姓名',
-                'phone' => '13122222222',
-            ],
-        ];
 
-        recordLog(1, $params);
-
-        $data = $this->logic->list();
+        $data = $this->adminLogic->list();
+        recordLog(1, $data);
 
         return returnData(200, __('lang.success'), $data);
     }

@@ -118,32 +118,14 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
-        // sql日志
-        'sqllog' => [
+        // admin sql日志
+        'adminsql' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/sql/sql.log'),
-            'level' => 'info',
-            'days' => 15,
-            'permission' => 0777,
-        ],
-
-        // api请求日志
-        'apilog' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/api/request/api-request.log'),
+            'path' => storage_path('logs/admin/sql/admin-sql.log'),
             'level' => 'info',
             'days' => 5,
             'permission' => 0777,
         ],
-        // api普通日志记录，排查bug用
-        'apirecordlog' => [
-            'driver' => 'daily',
-            'path' => storage_path('logs/api/record/api-record.log'),
-            'level' => 'info',
-            'days' => 5,
-            'permission' => 0777,
-        ],
-
         // 后台接口请求日志
         'adminlog' => [
             'driver' => 'daily',
@@ -156,6 +138,31 @@ return [
         'adminrecordlog' => [
             'driver' => 'daily',
             'path' => storage_path('logs/admin/record/admin-record.log'),
+            'level' => 'info',
+            'days' => 5,
+            'permission' => 0777,
+        ],
+
+        // api sql日志
+        'apisql' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api/sql/api-sql.log'),
+            'level' => 'info',
+            'days' => 5,
+            'permission' => 0777,
+        ],
+        // api请求日志
+        'apilog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api/request/api-request.log'),
+            'level' => 'info',
+            'days' => 5,
+            'permission' => 0777,
+        ],
+        // api普通日志记录，排查bug用
+        'apirecordlog' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/api/record/api-record.log'),
             'level' => 'info',
             'days' => 5,
             'permission' => 0777,
