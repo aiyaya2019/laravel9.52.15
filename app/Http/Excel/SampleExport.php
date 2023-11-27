@@ -55,6 +55,7 @@ class SampleExport implements WithHeadings, FromCollection, WithTitle, WithColum
                 'nickname' => $value['nickname'],
                 'username' => $value['username'],
                 'account' => $value['account'],
+                'phone' => $value['phone'],
                 'created_at' => $value['created_at'],
             ];
         }
@@ -84,7 +85,7 @@ class SampleExport implements WithHeadings, FromCollection, WithTitle, WithColum
      */
     public function columnWidths(): array {
         return [
-            'A' => 30, 'B' => 30, 'C' => 30, 'D' => 30, 'F' => 30,
+            'A' => 30, 'B' => 30, 'C' => 30, 'D' => 30, 'E' => 30,
         ];
     }
 
@@ -105,16 +106,16 @@ class SampleExport implements WithHeadings, FromCollection, WithTitle, WithColum
 
         $sheet->getRowDimension('1')->setRowHeight(36);
 
-        $sheet->getStyle('A1:F1')->getFont()->setBold(true)->setSize(18)->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true)->setSize(18)->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
 
-        $sheet->getStyle('A1:F1')->getFill()->applyFromArray([
+        $sheet->getStyle('A1:E1')->getFill()->applyFromArray([
             'fillType' => 'solid',
             'rotation' => 0,
             'color' => ['rgb' => '050505'],
         ]);
 
-        $sheet->getStyle('A1:F1'.$this->column)->getAlignment()->setVertical('center');//垂直居中
-        $sheet->getStyle('A1:F1'.$this->column)->applyFromArray(['alignment' => ['horizontal' => 'center']]);//设置水平居中
+        $sheet->getStyle('A1:E1'.$this->column)->getAlignment()->setVertical('center');//垂直居中
+        $sheet->getStyle('A1:E1'.$this->column)->applyFromArray(['alignment' => ['horizontal' => 'center']]);//设置水平居中
     }
 
 

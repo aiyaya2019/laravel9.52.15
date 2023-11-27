@@ -199,4 +199,70 @@ class ExportController extends Controller {
         return Excel::download(new MoreImgExport($data), '多个单元格中导出图片.xls');
     }
 
+    /**
+     * @Desc:生成excel文件保存到指定目录，并将生成文件打包为zip，保存到指定文件
+     * @return \Illuminate\Http\JsonResponse
+     * @author: wanf
+     * @Time: 2023/11/27 19:04
+     */
+    public function zipExport() {
+        $data1 = [
+            [
+                'nickname' => '昵称1',
+                'username' => '用户名1',
+                'account' => '账号1',
+                'phone' => '13111111111',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'nickname' => '昵称2',
+                'username' => '用户名2',
+                'account' => '账号2',
+                'phone' => '13122222222',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+        ];
+        $data2 = [
+            [
+                'nickname' => '昵称1',
+                'username' => '用户名1',
+                'account' => '账号1',
+                'phone' => '13133333333',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'nickname' => '昵称2',
+                'username' => '用户名2',
+                'account' => '账号2',
+                'phone' => '13144444444',
+                'created_at' => date('Y-m-d H:i:s'),
+            ],
+        ];
+
+        $excel1 = 'excel1.xlsx';
+        $excel2 = 'excel2.xlsx';
+
+        Excel::store(new SampleExport($data1, '用户列表'), $excel1, 'download');
+        Excel::store(new SampleExport($data2, '用户列表'), $excel2, 'download');
+
+        $zipName = sprintf('%s%s', env('download_file_path'), 'test.zip');
+
+        // zip创建文件
+        $zip = new \ZipArchive();
+
+        if ($zip->open($zipName, \ZipArchive::CREATE) !== true) {
+            return returnData(400, '压缩包创建失败');
+        }
+
+        $excelFile1 = sprintf('%s%s', env('download_file_path'), $excel1);
+        $excelFile2 = sprintf('%s%s', env('download_file_path'), $excel2);
+
+        $zip->addFile($excelFile1, $excel1);
+        $zip->addFile($excelFile2, $excel2);
+
+        $zip->close();
+
+        return returnData(200, sprintf('压缩包创建成功，请查看：%s', $zipName), $zipName);
+    }
+
 }

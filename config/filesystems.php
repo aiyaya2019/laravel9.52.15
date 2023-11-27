@@ -56,6 +56,11 @@ return [
             'throw' => false,
         ],
 
+        'download' => [
+            'driver' => 'local',
+            'root' => '../storage/download',
+        ],
+
     ],
 
     /*
