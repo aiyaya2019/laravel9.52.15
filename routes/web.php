@@ -51,6 +51,14 @@ Route::prefix('/open')->middleware(['admin.request.log'])->group(function () {
 Route::match(['get', 'post'],'demo/export/{action}', function(App\Http\Controllers\Demo\ExportController $index, $action){
     return $index->$action();
 });
+// // Demo\ImportController控制器路由入口
+// Route::match(['get', 'post'],'demo/import/{action}', function(App\Http\Controllers\Demo\ImportController $index, $action){
+//     return $index->$action();
+// });
+
+Route::prefix('demo/import')->group(function () {
+    Route::match(['get', 'post'], 'userPublicImport', [\App\Http\Controllers\Demo\ImportController::class, 'userPublicImport']);
+});
 
 Route::middleware(['admin.request.log'])->match(['get', 'post'],'demo/test/{action}', function(App\Http\Controllers\Demo\TestController $index, $action){
     return $index->$action();

@@ -10,6 +10,7 @@ return [
     'account_error' => '账号错误',
     'pwd_error' => '密码错误',
     'account_pwd_error' => '账号或密码错误',
+    'file_suffix_error' => '文件后缀名错误',
 
 
 

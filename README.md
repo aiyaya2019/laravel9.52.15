@@ -67,12 +67,12 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 
 安装注意事项：
-项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
 
-如果没有maatwebsite/excel依赖，就安装3.*以上版本maatwebsite/excel，命令：composer require maatwebsite/excel --update-with-dependencies
+1、项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
 
+2、如果没有maatwebsite/excel依赖，就安装3.*以上版本maatwebsite/excel，命令：composer require maatwebsite/excel --update-with-dependencies
 
-composer require w7corp/easywechat:^6.7。安装该依赖需要先开启sodium扩展
+3、composer require w7corp/easywechat:^6.7。安装该依赖需要先开启sodium扩展
 
 
 
@@ -138,3 +138,5 @@ api模块jwt登录验证
 
 多语言：
 使用lang/cn/lang.php 或 lang/en/lang.php的配置。如果英文环境中没有某个给定的字符串翻译时，会默认使用cn的翻译(config/app.php中有配置：'fallback_locale' => 'cn')。
+
+使用artisan创建imports类到Http/Excel目录中：php artisan make:import ..\Http\Excel\Imports。创建完成之后更改命名空间

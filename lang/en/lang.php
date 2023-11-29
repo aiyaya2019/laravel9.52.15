@@ -9,6 +9,7 @@ return [
     'account_error' => 'Account error',
     'pwd_error' => 'Password error',
     'account_pwd_error' => 'Account or password error',
+    'file_suffix_error' => 'File suffix error',
 
 
 
