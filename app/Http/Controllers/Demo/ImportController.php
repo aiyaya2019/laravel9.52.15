@@ -17,7 +17,7 @@ class ImportController extends Controller {
      * @author: wanf
      * @Time: 2023/11/29 11:50
      */
-    public function userPublicImport(Request $request) {
+    public function usePublicImport(Request $request) {
         $file = request('file');
         // $file = $request->file('file');
 
