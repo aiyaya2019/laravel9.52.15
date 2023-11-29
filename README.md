@@ -72,11 +72,15 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 如果没有maatwebsite/excel依赖，就安装3.*以上版本maatwebsite/excel，命令：composer require maatwebsite/excel --update-with-dependencies
 
 
+composer require w7corp/easywechat:^6.7。安装该依赖需要先开启sodium扩展
+
+
 
 登录验证说明：
 admin模块登录验证
 用admin表验证登录，name,password
 password存哈希值，Hash::make(666666);
+````
 CREATE TABLE `admin` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -87,28 +91,36 @@ CREATE TABLE `admin` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+````
 
 config/auth.php配置
 1、guards加
+````
 'admin' => [
     'driver' => 'session',
     'provider' => 'admin',
 ],
+````
 
 2、providers加
+````
 'admin' => [
     'driver' => 'eloquent',
     'model' => App\Models\Admin::class,
 ],
+````
 
 3、php artisan新建路由中间件AdminAuth，路径：Http/Middleware/AdminAuth的handle加验证没登录提示
 
+````
 if (!Auth::guard('admin')->check()) {
     return response()->json(['code' => 300, 'msg' => '没有登录']);
 }
+````
 
 4、在Http/Kernelde $routeMiddleware中加：'auth.admin' => AdminAuth::class,
 5、路由中可以使用中间件验证登录
+````
 Route::prefix('/server')->middleware('auth.admin')->group(function () {
     Route::match(['get', 'post'], 'logout', [\App\Http\Controllers\Admin\LoginController::class, 'logout']);
 
@@ -117,6 +129,7 @@ Route::prefix('/server')->middleware('auth.admin')->group(function () {
         Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Admin\BannerController::class, 'list']);
     });
 });
+````
 
 token使用：
 api模块jwt登录验证
