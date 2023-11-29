@@ -57,7 +57,8 @@ Route::match(['get', 'post'],'demo/export/{action}', function(App\Http\Controlle
 // });
 
 Route::prefix('demo/import')->group(function () {
-    Route::match(['get', 'post'], 'userPublicImport', [\App\Http\Controllers\Demo\ImportController::class, 'userPublicImport']);
+    Route::match(['get', 'post'], 'usePublicImport', [\App\Http\Controllers\Demo\ImportController::class, 'usePublicImport']);
+    Route::match(['get', 'post'], 'useCollectionImport', [\App\Http\Controllers\Demo\ImportController::class, 'useCollectionImport']);
 });
 
 Route::middleware(['admin.request.log'])->match(['get', 'post'],'demo/test/{action}', function(App\Http\Controllers\Demo\TestController $index, $action){

@@ -10,7 +10,7 @@ use Illuminate\Database\Query\Builder as DbBuilder;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
-class BaseModel extends Model {
+class BaseModelBak extends Model {
     use HasFactory;
 
     protected $fillable = [
