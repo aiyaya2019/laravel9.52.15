@@ -74,6 +74,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 3、composer require w7corp/easywechat:^6.7。安装该依赖需要先开启sodium扩展
 
+4、建议用抛异常，可接收错误详情，如：报错所在文件、第几行、错误信息等
+
 
 
 登录验证说明：
