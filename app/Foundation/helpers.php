@@ -300,6 +300,50 @@ function sm2Decrypt(string $string) {
     return $sm2->doDecrypt($string, Constant::SM2_PRIVATE_KEY);
 }
 
+/**
+ * @Desc:删除文件，可单个删除，可批量删除
+ * @param $filePaths 文件绝对路径 字符串或数组
+ * @return bool
+ * @author: wanf
+ * @Time: 2023/11/30 19:35
+ */
+function delFiles($filePaths) {
+    $delSuccessFiles = [];
+    if (is_array($filePaths)) {
+        foreach ($filePaths as $filePath) {
+            // 检查文件是否存在
+            if (!file_exists($filePath)) {
+                recordLog(0, sprintf('%s(%s)', __('lang.file_not_exist'), $filePath));
+                continue;
+            }
+
+            if (! @unlink($filePath)) {
+                recordLog(0, sprintf('%s(%s)', __('lang.del_error'), $filePath));
+                return false;
+            }
+
+            $delSuccessFiles[] = $filePath;
+        }
+
+    } else {
+        // 检查文件是否存在
+        if (!file_exists($filePaths)) {
+            recordLog(0, sprintf('%s(%s)', __('lang.file_not_exist'), $filePaths));
+            return false;
+        }
+
+        if (! @unlink($filePaths)) {
+            recordLog(0, sprintf('%s(%s)', __('lang.del_error'), $filePaths));
+            return false;
+        }
+
+        $delSuccessFiles[] = $filePaths;
+    }
+
+    recordLog(1, sprintf('%s(%s)', __('lang.del_success'), implode(',', $delSuccessFiles)));
+    return true;
+}
+
 
 
 

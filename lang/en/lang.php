@@ -12,6 +12,7 @@ return [
     'file_suffix_error' => 'File suffix error',
     'upload_success' => 'Upload successful',
     'upload_error' => 'Upload failed',
+    'file_not_exist' => 'file does not exist',
 
 
 

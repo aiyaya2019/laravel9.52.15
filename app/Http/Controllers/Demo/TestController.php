@@ -61,4 +61,13 @@ class TestController {
         return returnData(200, __('lang.success'), $data);
     }
 
+    public function delFile() {
+        $files = [
+            'D:/phpstudy_pro/WWW/laravel9.52.15/storage/app/public/uploads/20231130112306_常用人员导入模板.xls',
+            'D:/phpstudy_pro/WWW/laravel9.52.15/storage/app/public/uploads/20231130091838_常用人员导入模板.xls',
+        ];
+        $res = delFiles($files);
+        var_dump($res);
+    }
+
 }

@@ -13,6 +13,7 @@ return [
     'file_suffix_error' => '文件后缀名错误',
     'upload_success' => '上传成功',
     'upload_error' => '上传失败',
+    'file_not_exist' => '文件不存在',
 
 
 
