@@ -11,6 +11,8 @@ return [
     'pwd_error' => '密码错误',
     'account_pwd_error' => '账号或密码错误',
     'file_suffix_error' => '文件后缀名错误',
+    'upload_success' => '上传成功',
+    'upload_error' => '上传失败',
 
 
 

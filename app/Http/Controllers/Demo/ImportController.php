@@ -23,7 +23,7 @@ class ImportController extends Controller {
         // $file = $request->file('file');
 
         $extension = $file->getClientOriginalExtension();//文件扩展名
-        if (!in_array($extension, ConstantArr::$excelSuffix)) {
+        if (!in_array($extension, ConstantArr::$excelExtension)) {
             return returnData(400, __('lang.file_suffix_error'));
         }
 
@@ -49,7 +49,7 @@ class ImportController extends Controller {
         $file = $request->file('file');
 
         $extension = $file->getClientOriginalExtension();//文件扩展名
-        if (!in_array($extension, ConstantArr::$excelSuffix)) {
+        if (!in_array($extension, ConstantArr::$excelExtension)) {
             return returnData(400, __('lang.file_suffix_error'));
         }
 

@@ -17,6 +17,7 @@ Route::middleware(['admin.request.log'])->get('/', function () {
     return view('welcome');
 });
 
+// 登录
 Route::middleware(['admin.request.log'])->match(['get', 'post'], 'server/login', [\App\Http\Controllers\Admin\LoginController::class, 'login']);
 
 // 后台需要校验权限的接口
@@ -47,20 +48,26 @@ Route::prefix('/open')->middleware(['admin.request.log'])->group(function () {
     });
 });
 
-// Demo\ExportController控制器路由入口
-Route::match(['get', 'post'],'demo/export/{action}', function(App\Http\Controllers\Demo\ExportController $index, $action){
-    return $index->$action();
-});
-// // Demo\ImportController控制器路由入口
-// Route::match(['get', 'post'],'demo/import/{action}', function(App\Http\Controllers\Demo\ImportController $index, $action){
-//     return $index->$action();
-// });
-
-Route::prefix('demo/import')->group(function () {
-    Route::match(['get', 'post'], 'usePublicImport', [\App\Http\Controllers\Demo\ImportController::class, 'usePublicImport']);
-    Route::match(['get', 'post'], 'useCollectionImport', [\App\Http\Controllers\Demo\ImportController::class, 'useCollectionImport']);
+// 对外开放的公共函数接口
+Route::prefix('/common')->middleware(['admin.request.log'])->group(function () {
+    Route::match(['get', 'post'], 'uploadFile', [\App\Http\Controllers\CommonController::class , 'uploadFile']);
 });
 
+//用例路由入口
+Route::prefix('demo')->group(function () {
+    // Demo\ExportController控制器路由入口
+    Route::match(['get', 'post'],'export/{action}', function(App\Http\Controllers\Demo\ExportController $index, $action){
+        return $index->$action();
+    });
+
+    // Demo\ImportController控制器路由入口
+    Route::prefix('/import')->group(function () {
+        Route::match(['get', 'post'], 'usePublicImport', [\App\Http\Controllers\Demo\ImportController::class, 'usePublicImport']);
+        Route::match(['get', 'post'], 'useCollectionImport', [\App\Http\Controllers\Demo\ImportController::class, 'useCollectionImport']);
+    });
+});
+
+// Demo\TestController控制器路由入口 调试用
 Route::middleware(['admin.request.log'])->match(['get', 'post'],'demo/test/{action}', function(App\Http\Controllers\Demo\TestController $index, $action){
     return $index->$action();
 });

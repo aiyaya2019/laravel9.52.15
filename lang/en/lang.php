@@ -10,6 +10,8 @@ return [
     'pwd_error' => 'Password error',
     'account_pwd_error' => 'Account or password error',
     'file_suffix_error' => 'File suffix error',
+    'upload_success' => 'Upload successful',
+    'upload_error' => 'Upload failed',
 
 
 

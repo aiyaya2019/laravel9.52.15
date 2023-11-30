@@ -12,6 +12,9 @@ class ConstantArr {
     ];
 
     // 导入excel文件格式，统一小写，自主转小写判断
-    public static array $excelSuffix = ['xls', 'xlsx'];
+    public static array $excelExtension = ['xls', 'xlsx'];
+
+    // 允许上传的文件
+    public static array $uploadExtension = ['xls', 'xlsx', 'jpg', 'jpeg', 'png', 'doc', 'txt', 'pdf'];
 
 }
