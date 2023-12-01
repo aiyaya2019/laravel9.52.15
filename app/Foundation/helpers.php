@@ -382,5 +382,35 @@ function delDirAndFiles(string $dirPath, bool $delDir = false) {
     return true;
 }
 
+/**
+ * @Desc: 校验字符串长度
+ * @param string $string 校验字符
+ * @param int $minLen 字符最少长度 为0表示不限制
+ * @param int $maxLen 字符最大长度 为0表示不限制
+ * @return bool
+ * @author: wanf
+ * @Time: 2023/12/1 17:09
+ */
+function checkStringLen(string $string = '', int $minLen = 0, int $maxLen = 0){
+    preg_match_all('/./us', $string, $match);
 
+    $len = count($match[0]);
 
+    $result = true;
+
+    if ($minLen != 0 && $maxLen != 0) {
+        if ($len < $minLen || $len > $maxLen) {
+            $result = false;
+        }
+    } elseif ($minLen != 0 && $maxLen == 0) {
+        if ($len < $minLen) {
+            $result = false;
+        }
+    } elseif ($minLen == 0 && $maxLen != 0) {
+        if ($len > $maxLen) {
+            $result = false;
+        }
+    }
+
+    return $result;
+}
