@@ -353,13 +353,16 @@ function delFiles($filePaths) {
  * @Time: 2023/12/1 9:02
  */
 function delDirAndFiles(string $dirPath, bool $delDir = false) {
+    // file_exists()检查文件或目录是否存在
+    if (!file_exists($dirPath)) {
+        recordLog(0, sprintf('%s(%s)', __('lang.file_dir_not_exist'), $dirPath));
+        return false;
+    }
+
     $handle = opendir($dirPath);
     if (!$handle) {
-        if (file_exists($dirPath)) {
-            return @unlink($dirPath);
-        } else {
-            return false;
-        }
+        // unlink() 函数删除文件
+        return @unlink($dirPath);
     }
 
     while (false !== ( $item = readdir($handle) )) {
@@ -367,10 +370,15 @@ function delDirAndFiles(string $dirPath, bool $delDir = false) {
             is_dir("$dirPath/$item") ? delDirAndFiles("$dirPath/$item", $delDir) : @unlink("$dirPath/$item");
         }
     }
+
     closedir($handle);
+
     if ($delDir) {
+        // rmdir() 函数删除空的目录
         @rmdir($dirPath);//目录下文件有可能没权限删除，导致目录删除失败，此处不报错
     }
+
+    recordLog(1, sprintf('%s(%s)，delDir:%s', __('lang.del_success'), $dirPath, $delDir));
     return true;
 }
 

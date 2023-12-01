@@ -13,6 +13,7 @@ return [
     'upload_success' => 'Upload successful',
     'upload_error' => 'Upload failed',
     'file_not_exist' => 'file does not exist',
+    'file_dir_not_exist' => 'No such file or directory',
 
 
 

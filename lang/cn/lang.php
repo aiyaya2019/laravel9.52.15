@@ -14,6 +14,7 @@ return [
     'upload_success' => '上传成功',
     'upload_error' => '上传失败',
     'file_not_exist' => '文件不存在',
+    'file_dir_not_exist' => '文件或目录不存在',
 
 
 
