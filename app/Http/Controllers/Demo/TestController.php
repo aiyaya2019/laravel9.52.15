@@ -70,4 +70,11 @@ class TestController {
         var_dump($res);
     }
 
+    public function delDirFiles() {
+        $files='D:/phpstudy_pro/WWW/laravel9.52.15/storage/app/public/uploads/a';
+
+        $res = delDirAndFiles($files, true);
+        var_dump($res);
+    }
+
 }

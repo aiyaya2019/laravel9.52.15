@@ -344,6 +344,35 @@ function delFiles($filePaths) {
     return true;
 }
 
+/**
+ * @Desc:删除目录和目录下的文件
+ * @param string $dirPath 目录路径
+ * @param bool $delDir 是否删除目录：false否(仅删除目录下的所有文件，包括子目录下的文件，但保留子目录)；true是(删除目录及其下的所有目录和文件)
+ * @return bool
+ * @author: wanf
+ * @Time: 2023/12/1 9:02
+ */
+function delDirAndFiles(string $dirPath, bool $delDir = false) {
+    $handle = opendir($dirPath);
+    if (!$handle) {
+        if (file_exists($dirPath)) {
+            return @unlink($dirPath);
+        } else {
+            return false;
+        }
+    }
+
+    while (false !== ( $item = readdir($handle) )) {
+        if ($item != '.' && $item != '..') {
+            is_dir("$dirPath/$item") ? delDirAndFiles("$dirPath/$item", $delDir) : @unlink("$dirPath/$item");
+        }
+    }
+    closedir($handle);
+    if ($delDir) {
+        @rmdir($dirPath);//目录下文件有可能没权限删除，导致目录删除失败，此处不报错
+    }
+    return true;
+}
 
 
 
