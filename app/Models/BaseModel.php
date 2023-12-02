@@ -17,6 +17,24 @@ class BaseModel extends Model {
     ];
 
     /**
+     * @Desc:过滤数据表中不存在的字段
+     * @param array $params
+     * @return array
+     * @author: wanf
+     * @Time: 2023/12/2 11:47
+     */
+    public function checkAttributeValue(array $params) {
+        $data = [];
+        foreach ($this->getFillable() as $key) {
+            if (array_key_exists($key, $params)) {
+                $data[$key] = $params[$key];
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * @Desc:查询数量
      * @param string|array $condition 查询条件，包含whereIn查询
      *
@@ -481,7 +499,5 @@ class BaseModel extends Model {
 
         return $val;
     }
-
-
 
 }
