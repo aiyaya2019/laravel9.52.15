@@ -698,3 +698,18 @@ function arraySortByArr(array $data, array $sortArr, $field) {
 
     return $data;
 }
+
+/**
+ * @Desc:二维数组根据某字段的值进行排序
+ * @param array $data 待排序数组，二维数组
+ * @param string $field 排序依据字段
+ * @param $order SORT_ASC：升序；SORT_DESC：降序
+ * @return array
+ * @author: wanf
+ * @Time: 2023/12/2 11:41
+ */
+function arraySort(array $data, string $field, $order = SORT_DESC) {
+    array_multisort(array_column($data, $field), $order, $data);
+
+    return $data;
+}

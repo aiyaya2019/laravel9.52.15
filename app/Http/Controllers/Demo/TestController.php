@@ -114,4 +114,32 @@ class TestController {
         print_r(arraySortByArr($data, $sortReg, 'user_id'));exit;
     }
 
+    public function arraySort() {
+        $data = [
+            [
+                'row_num' => 1,
+                'data' => [
+                    'name' => 'b',
+                    'num' => 1,
+                ]
+            ],
+            [
+                'row_num' => 55,
+                'data' => [
+                    'name' => 'b',
+                    'num' => 1,
+                ]
+            ],
+            [
+                'row_num' => 3,
+                'data' => [
+                    'name' => 'b',
+                    'num' => 1,
+                ]
+            ],
+        ];
+        echo '<pre>';
+        print_r(arraySort($data, 'row_num', SORT_ASC));
+    }
+
 }
