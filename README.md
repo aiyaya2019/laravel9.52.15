@@ -66,7 +66,7 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 
-安装注意事项：
+## 安装注意事项：
 
 1、项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
 
@@ -74,11 +74,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 3、composer require w7corp/easywechat:^6.7。安装该依赖需要先开启sodium扩展
 
-4、建议用抛异常，可接收错误详情，如：报错所在文件、第几行、错误信息等
 
-
-
-登录验证说明：
+##登录验证说明：
 admin模块登录验证
 用admin表验证登录，name,password
 password存哈希值，Hash::make(666666);
@@ -95,7 +92,7 @@ CREATE TABLE `admin` (
 ) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ````
 
-config/auth.php配置
+##config/auth.php配置
 1、guards加
 ````
 'admin' => [
@@ -133,14 +130,18 @@ Route::prefix('/server')->middleware('auth.admin')->group(function () {
 });
 ````
 
-token使用：
+##token使用：
 api模块jwt登录验证
 前端请求，header里面加参数Authorization：值为token
 
 
-多语言：
+##多语言：
 使用lang/cn/lang.php 或 lang/en/lang.php的配置。如果英文环境中没有某个给定的字符串翻译时，会默认使用cn的翻译(config/app.php中有配置：'fallback_locale' => 'cn')。
 
-使用artisan创建imports类到Http/Excel目录中：php artisan make:import ..\Http\Excel\Imports。创建完成之后更改命名空间
+##使用说明
+####建议用抛异常，可接收错误详情，如：报错所在文件、第几行、错误信息等
 
-上传文件(可单个上传，也可多个同时上传，返回文件路径数组)。保存目录为：D:\phpstudy_pro\WWW\laravel9.52.15\storage\app\public\uploads
+1、使用artisan创建imports类到Http/Excel目录中：php artisan make:import ..\Http\Excel\Imports。创建完成之后更改命名空间
+
+2、上传文件(可单个上传，也可多个同时上传，返回文件路径数组)。保存目录为：D:\phpstudy_pro\WWW\laravel9.52.15\storage\app\public\uploads
+
