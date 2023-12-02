@@ -14,4 +14,5 @@ class Constant {
 
     const SM4_KEY = 'abcdef1699511091';//sm_key，sm4文件加解密用
     const SM4_IV = '1234561699511091';//sm_iv，sm4文件加解密用
+    const AES_SECRET = 'aiya_aes_secret';//aes加解密秘钥
 }

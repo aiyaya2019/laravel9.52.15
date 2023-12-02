@@ -5,15 +5,6 @@ use Rtgm\sm\RtSm2;
 use App\Http\Common\Constant;
 
 /**
- * 对象转数组
- * @param object $object
- */
-function objectToArray($object) {
-    //先编码成json字符串，再解码成数组
-    return !empty($object) ? json_decode(json_encode($object), true) : [];
-}
-
-/**
  * @Desc:返回数据给前端
  * @param $code code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败
  * @param $msg 提示信息
@@ -301,6 +292,29 @@ function sm2Decrypt(string $string) {
 }
 
 /**
+ * @Desc:AES加密
+ * @param string $string 待加密字符
+ * @return string
+ * @author: wanf
+ * @Time: 2023/12/2 10:24
+ */
+function aesEncrypt(string $string) {
+    $data = openssl_encrypt($string, 'AES-128-ECB', Constant::AES_SECRET, OPENSSL_RAW_DATA);
+    return base64_encode($data);
+}
+
+/**
+ * @Desc:AES解密
+ * @param string $string 待解密字符
+ * @return false|string
+ * @author: wanf
+ * @Time: 2023/12/2 10:25
+ */
+function aesDecrypt(string $string) {
+    return openssl_decrypt(base64_decode($string),"AES-128-ECB", Constant::AES_SECRET,OPENSSL_RAW_DATA);
+}
+
+/**
  * @Desc:删除文件，可单个删除，可批量删除
  * @param $filePaths 文件绝对路径 字符串或数组
  * @return bool
@@ -383,6 +397,235 @@ function delDirAndFiles(string $dirPath, bool $delDir = false) {
 }
 
 /**
+ * @Desc:base64格式图片转图片文件保存
+ * @param string $base64 base64字符串
+ * @param string $path 保存目录
+ * @param string $name 文件名称
+ * @return false|string
+ * @author: wanf
+ * @Time: 2023/12/1 17:37
+ */
+function saveBase64Img(string $base64, string $path, string $name) {
+    if (!str_contains($base64, ',')) {
+        return false;
+    }
+
+    $arr = explode(',', $base64);
+
+    // 匹配/和;之间的字符  图片格式
+    if (preg_match_all('/(?<=\/).*?(?=;)/', $arr[0], $suffix) == 0) {
+        return false;
+    }
+
+    $savePath = $_SERVER['DOCUMENT_ROOT'] .$path;
+
+    // 确认路径
+    if(!is_dir($savePath)){
+        @mkdir($savePath, 0777, true);
+    }
+
+    $file = sprintf('%s%s.%s', $savePath, $name, $suffix[0][0]);
+
+
+    $res = file_put_contents($file, base64_decode($arr[1]));
+    if (!$res) {
+        return false;
+    }
+
+    return sprintf('%s%s.%s', $path, $name, $suffix[0][0]);
+}
+
+/**
+ * @Desc:图片转base64
+ * @param string $imageFile 图片url。如：http://172.16.19.102/image/007.png
+ * @return string
+ * @author: wanf
+ * @Time: 2023/12/2 10:27
+ */
+function base64EncodeImage(string $imageFile){
+    $base64Image = '';
+    $imageInfo = getimagesize($imageFile);
+    if ($imageInfo) {
+        $imageData = file_get_contents($imageFile);
+        $base64Image = 'data:' .$imageInfo['mime'] .';base64,' .chunk_split(base64_encode($imageData));
+    }
+    return $base64Image;
+}
+
+/**
+ * @Desc:获取指定月份的第一天和最后一天日期
+ * @param $y 年
+ * @param $m 月
+ * @param $timeStamp 默认false：不转时间戳
+ * @return array
+ * @author: wanf
+ * @Time: 2023/12/2 9:34
+ */
+function monthFirstAndLastDay($y = '', $m = '', $timeStamp = false){
+    if ($y == '') $y = date('Y');
+    if ($m == '') $m = date('m');
+    $m = sprintf('%02d', intval($m));
+    $y = str_pad(intval($y), 4, '0', STR_PAD_RIGHT);
+
+    $m>12 || $m<1 ? $m=1 : $m=$m;
+    $firstTime = strtotime($y .$m .'01000000');
+
+    $firstDay = date('Y-m-01 00:00:00', $firstTime);
+    $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay +1 month -1 day"));
+
+    return [
+        'first_day' => $timeStamp == false ? $firstDay : strtotime($firstDay),
+        'last_day' => $timeStamp == false ? $lastDay : strtotime($lastDay),
+    ];
+}
+
+/**
+ * @Desc:根据日期获取该日期所在星期的第一天和最后一天日期
+ * @param $date 日期
+ * @param $first 表示每周星期一为开始日期 0表示每周日为开始日期
+ * @return array
+ * @author: wanf
+ * @Time: 2023/12/2 9:51
+ */
+function getWeekFirstAndLastDayByDate($date = '', $first = 1){
+    //当前日期
+    !$date && $date = date('Y-m-d', time());
+
+    //$first =1 表示每周星期一为开始日期 0表示每周日为开始日期
+    //获取当前周的第几天 周日是 0 周一到周六是 1 - 6
+    $w = date('w', strtotime($date));
+
+    //获取本周开始日期，如果$w是0，则表示周日，减去 6 天
+    $week_start = date('Y-m-d', strtotime("$date -" . ($w ? $w - $first : 6) . ' days'));
+
+    //本周结束日期
+    $week_end = date('Y-m-d', strtotime("$week_start +6 days"));
+
+    return ['first_day' => $week_start, 'last_day' => $week_end];
+}
+
+/**
+ * @Desc:计算开始日期-结束日期内的月
+ * @param string $startDate 开始日期
+ * @param string $endDate 结束日期
+ * @return array 月开始结束日期数组
+ * @author: wanf
+ * @Time: 2023/12/2 10:05
+ */
+function getMonthsFirstAndLastDayByTimeSlot(string $startDate, string $endDate) {
+    if (strtotime($startDate) > strtotime($endDate)) {
+        return [];
+    }
+
+    $endDate = date('Y-m', strtotime($endDate));
+    $rang = [];
+    $i = 0;
+    do {
+        $month = date('Y-m', strtotime($startDate . ' + ' . $i . ' month'));
+        $rang[] = $month;
+        $i++;
+    } while ($month < $endDate);
+
+    $months = [];
+    foreach ($rang as $key => $item) {
+        $months[$key] = [
+            'start' => date('Y-m-01', strtotime($item)),
+            'end' => date('Y-m-d', strtotime("$item +1 month -2 day")),
+        ];
+    }
+    return $months;
+}
+
+/**
+ * @Desc:计算开始日期-结束日期内的周，周的定义：周一到周日且不能跨月
+ * @param $startDate 开始日期
+ * @param $endDate 结束日期
+ * @return array * @throws Exception 周开始结束日期数组
+ * @author: wanf
+ * @Time: 2023/12/2 10:12
+ */
+function getWeeksFirstAndLastDayByTimeSlot($startDate, $endDate) {
+    $startDateTime = new DateTime($startDate);
+    $endDateTime = new DateTime($endDate);
+    $diffDays = $startDateTime->diff($endDateTime)->format('%R%a') + 1; //时间段内共有天数
+
+    // 如果结束日期小于开始日期则不计算
+    if ($diffDays < 1) {
+        return [];
+    }
+
+    $flowDate = clone $startDateTime;
+    $weeks = [];
+    $week = 0; //时间段内第几周
+
+    for ($i = 1; $i <= $diffDays; $i++) {
+        //记录第周的开始日期
+        if (!isset($weeks[$week]['start'])) {
+            $weeks[$week]['start'] = $flowDate->format('Y-m-d');
+        }
+
+        //通过后一天，计算出是否跨月或者周的开始日期。
+        //如果后一天为1号或者周一，就把当前日期定为周的结束日期
+        $step_date = (clone $flowDate)->add(new DateInterval('P1D'));
+
+        if ($step_date->format('j') == 1 || $step_date->format('N') == 1) {
+            $weeks[$week]['end'] = $flowDate->format('Y-m-d');
+            $week += 1;
+
+        } elseif ($i == $diffDays && !isset($weeks[$week]['end'])) { //当计算到最后一天时，如果没有周的结束日期就把当前日期设定为周的结束日期
+            $weeks[$week]['end'] = $flowDate->format('Y-m-d');
+        }
+        $flowDate->add(new DateInterval('P1D')); //日期递增
+    }
+    return $weeks;
+}
+
+/**
+ * @Desc:秒转小时
+ * @param int $seconds 秒数
+ * @return false|string
+ * @author: wanf
+ * @Time: 2023/12/2 9:55
+ */
+function secondToHour(int $seconds){
+    if ($seconds > 3600){
+        $hours = intval($seconds / 3600);
+        $time = $hours .':' .gmstrftime('%M:%S', $seconds);
+    }else{
+        $time = gmstrftime('%H:%M:%S', $seconds);
+    }
+    return $time;
+}
+
+/**
+ * @Desc:输出提前n周 周几  n时 的时间
+ * @param int $weekNum 提前周数
+ * @param int $week 周几：0周日；1周一；2周二....
+ * @param int $hour 时
+ * @return string 日期
+ * @author: wanf
+ * @Time: 2023/12/2 10:15
+ */
+function getPreTime(int $weekNum = 1, int $week = 6, int $hour = 17) {
+    $week == 0 && $week = 7;
+    $preTime = mktime($hour,0,0, date('m'),date('d') - date('w') - 7 * $weekNum + $week, date('Y'));
+    $preDate = date('Y-m-d H:i:s', $preTime);
+    return $preDate;
+}
+
+/**
+ * @Desc:对象转数组
+ * @param $object
+ * @return array|mixed
+ * @author: wanf
+ * @Time: 2023/12/2 10:32
+ */
+function objectToArray($object) {
+    //先编码成json字符串，再解码成数组
+    return !empty($object) ? json_decode(json_encode($object), true) : [];
+}
+
+/**
  * @Desc: 校验字符串长度
  * @param string $string 校验字符
  * @param int $minLen 字符最少长度 为0表示不限制
@@ -413,4 +656,24 @@ function checkStringLen(string $string = '', int $minLen = 0, int $maxLen = 0){
     }
 
     return $result;
+}
+
+/**
+ * @Desc:返回树形结构
+ * @param array $data 原始数据，二维数组，必须要有字段：id、pid
+ * @param int $pid
+ * @return array
+ * @author: wanf
+ * @Time: 2023/12/2 10:30
+ */
+function getTree(array $data, int $pid = 0) {
+    $tree = [];
+    foreach ($data as $k => $v) {
+        if ($v['pid'] == $pid) {
+            $v['children'] = getTree($data, $v['id']);
+            $tree[] = $v;
+            unset($data[$k]);
+        }
+    }
+    return $tree;
 }
