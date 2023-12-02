@@ -677,3 +677,24 @@ function getTree(array $data, int $pid = 0) {
     }
     return $tree;
 }
+
+/**
+ * @Desc:二维数组某字段的值根据给定的一维数组依据来排序
+ * @param array $data 待排序数组，二维数组
+ * @param array $sortArr 排序依据，一维数组
+ * @param $field 排序依据，一维数组
+ * @return array
+ * @author: wanf
+ * @Time: 2023/12/2 11:11
+ */
+function arraySortByArr(array $data, array $sortArr, $field) {
+    $sortable = [];
+    foreach ($data as $key => $value) {
+        $sortable[$key] = array_search($value[$field], $sortArr);
+    }
+
+    // 使用 array_multisort 对两个数组进行排序
+    array_multisort($sortable, $data);
+
+    return $data;
+}

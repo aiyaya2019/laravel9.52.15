@@ -61,6 +61,11 @@ class TestController {
         return returnData(200, __('lang.success'), $data);
     }
 
+    /**
+     * @Desc:删除文件
+     * @author: wanf
+     * @Time: 2023/12/2 11:24
+     */
     public function delFile() {
         $files = [
             'D:/phpstudy_pro/WWW/laravel9.52.15/storage/app/public/uploads/20231130112306_常用人员导入模板.xls',
@@ -70,11 +75,43 @@ class TestController {
         var_dump($res);
     }
 
+    /**
+     * @Desc:删除文件和目录
+     * @author: wanf
+     * @Time: 2023/12/2 11:25
+     */
     public function delDirFiles() {
         $files='D:/phpstudy_pro/WWW/laravel9.52.15/storage/app/public/uploads/a';
 
         $res = delDirAndFiles($files, true);
         var_dump($res);
+    }
+
+    /**
+     * @Desc:二维数组排序
+     * @author: wanf
+     * @Time: 2023/12/2 11:25
+     */
+    public function arrSort() {
+        $sortReg = [10114, 10112, 10113, 10119];
+
+        $data = [
+            [
+                'seat_id' => 2,
+                'user_id' => 10112,
+            ],
+            [
+                'seat_id' => 3,
+                'user_id' => 10113,
+            ],
+            [
+
+                'seat_id' => 4,
+                'user_id' => 10114,
+            ],
+        ];
+        echo '<pre>';
+        print_r(arraySortByArr($data, $sortReg, 'user_id'));exit;
     }
 
 }
