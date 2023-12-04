@@ -36,6 +36,11 @@ class Sm4Decrypt extends Command {
     /**
      * Execute the console command.
      *
+     * 控制台使用命令
+     *
+     * D:/phpstudy_pro/Extensions/php/php8.0.2nts/php D:/phpstudy_pro/WWW/laravel9.52.15/artisan sm4decrypt '待解密文件绝对路径' '解密后文件保存路径(包含文件名)'
+     * 如：D:/phpstudy_pro/Extensions/php/php8.0.2nts/php D:/phpstudy_pro/WWW/laravel9.52.15/artisan sm4decrypt 'D:/phpstudy_pro/WWW/laravel9.52.15/storage/app/public/yuan.txt' 'D:/phpstudy_pro/WWW/laravel9.52.15/storage/app/public/jiemi_success.txt'
+     *
      * @return int
      */
     public function handle() {
