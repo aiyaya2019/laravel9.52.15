@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Demo;
 
+use App\Models\User;
+use App\Models\UserModel;
+
 class TestController {
 
     /**
@@ -140,6 +143,11 @@ class TestController {
         ];
         echo '<pre>';
         print_r(arraySort($data, 'row_num', SORT_ASC));
+    }
+
+    public function test() {
+        $res = (new UserModel())->singleInsert(['nickname' => 'nickname1', 'username' => '123'], false);
+        var_dump($res);
     }
 
 }

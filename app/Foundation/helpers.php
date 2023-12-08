@@ -713,3 +713,24 @@ function arraySort(array $data, string $field, $order = SORT_DESC) {
 
     return $data;
 }
+
+/**
+ * @Desc:判断是否为二维数组：是true；否：false
+ * @param array $data
+ * @return bool
+ * @author: wanf
+ * @Time: 2023/12/8 11:19
+ */
+function isTwoArray(array $data) {
+    if (empty($data)) {
+        return false;
+    }
+
+    foreach ($data as $value) {
+        if (!is_array($value)) {
+            return false;
+        }
+    }
+
+    return true;
+}

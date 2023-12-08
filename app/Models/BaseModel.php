@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as DbBuilder;
+use Illuminate\Support\Facades\Schema;
 
 class BaseModel extends Model {
     use HasFactory;
@@ -15,6 +16,18 @@ class BaseModel extends Model {
         'updated_at',
         'created_at',
     ];
+
+    public function __construct(array $attributes = []) {}
+
+    /**
+     * @Desc:获取数据表所有字段
+     * @return array
+     * @author: wanf
+     * @Time: 2023/12/8 11:35
+     */
+    public function getColumnList() {
+        return Schema::getColumnListing($this->table);
+    }
 
     /**
      * @Desc:过滤数据表中不存在的字段
@@ -25,13 +38,52 @@ class BaseModel extends Model {
      */
     public function checkAttributeValue(array $params) {
         $data = [];
-        foreach ($this->getFillable() as $key) {
-            if (array_key_exists($key, $params)) {
-                $data[$key] = $params[$key];
+
+        $isTwoArray = isTwoArray($params);
+
+        foreach ($this->getColumnList() as $key) {
+            if ($isTwoArray) {
+                foreach ($params as $k => $val) {
+                    if (array_key_exists($key, $val)) {
+                        $data[$k][$key] = $val[$key];
+                    }
+                }
+
+            } else {
+                if (array_key_exists($key, $params)) {
+                    $data[$key] = $params[$key];
+                }
             }
         }
 
         return $data;
+    }
+
+    /**
+     * @Desc:一条/多条插入数据
+     * @param array $data 一维/二维数组
+     * @param bool $isGetId 默认返回数据id(二维数组除外)
+     * @return false
+     * @author: wanf
+     * @Time: 2023/12/8 11:56
+     */
+    public function singleInsert(array $data, bool $isGetId = true) {
+        if (empty($data)) {
+            return false;
+        }
+
+        $isTwoArray = isTwoArray($data);
+
+        // 过滤数据表中不存在的字段
+        $data = $this->checkAttributeValue($data);
+
+        if ($isTwoArray || $isGetId == false) {
+            $result = self::insert($data);
+        } else {
+            $result = self::insertGetId($data);
+        }
+
+        return $result;
     }
 
     /**
@@ -330,6 +382,9 @@ class BaseModel extends Model {
         }
 
         !isset($data[self::UPDATED_AT]) && $data[self::UPDATED_AT] = date('Y-m-d H:i:s');
+
+        // 过滤数据表中不存在的字段
+        $data = $this->checkAttributeValue($data);
 
         $where = $this->whereHandle($condition);
 
