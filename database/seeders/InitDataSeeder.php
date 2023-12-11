@@ -16,7 +16,7 @@ class InitDataSeeder extends Seeder
      */
     public function run()
     {
-        $checkSql = "SELECT * FROM migrations where migration = 'InitDataSeeder62'";
+        $checkSql = "SELECT * FROM migrations where migration = 'InitDataSeeder'";
         $check = DB::select($checkSql);
 
         if (empty($check)) {
