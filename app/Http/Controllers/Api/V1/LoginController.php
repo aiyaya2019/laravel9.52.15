@@ -27,16 +27,16 @@ class LoginController extends BaseController {
         $user = User::where('account', $params['account'])->first();
 
         if (!$user) {
-            return response()->json(['code' => 400, 'msg' => '用户名或密码错误']);
+            return response()->json(['code' => 400, 'msg' => __('lang.account_pwd_error')]);
         }
 
         if (!Hash::check($params['password'], $user->password)) {
-            return response()->json(['code' => 400, 'msg' => '用户名或密码错误']);
+            return response()->json(['code' => 400, 'msg' => __('lang.account_pwd_error')]);
         }
 
         $token = auth('api')->login($user);
 
-        return response()->json(['code' => 200, 'msg' => '登录成功', 'token' => 'Bearer  ' .$token]);
+        return response()->json(['code' => 200, 'msg' => __('lang.login_success'), 'token' => 'Bearer  ' .$token]);
 
     }
 
@@ -45,12 +45,12 @@ class LoginController extends BaseController {
      */
     public function logout() {
         if (!Auth::guard('api')->check()) {
-            return response()->json(['code' => 300, 'msg' => '没有登录']);
+            return response()->json(['code' => 300, 'msg' => __('lang.error')]);
         }
 
         Auth::guard('api')->logout();
 
-        return response()->json(['code' => 200, 'msg' => '退出成功']);
+        return response()->json(['code' => 200, 'msg' => __('lang.success')]);
     }
 
 }

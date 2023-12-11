@@ -33,9 +33,9 @@ class LoginController extends BaseController {
             // $adminInfo = json_decode(json_encode($adminInfo), true);
             // print_r($adminInfo);
 
-            return response()->json(['code' => 200, 'msg' => '登录成功']);
+            return response()->json(['code' => 200, 'msg' => __('lang.login_success')]);
         } else {
-            return response()->json(['code' => 403, 'msg' => '用户名或密码错误']);
+            return response()->json(['code' => 403, 'msg' => __('lang.account_pwd_error')]);
         }
     }
 
@@ -44,12 +44,12 @@ class LoginController extends BaseController {
      */
     public function logout() {
         if (!Auth::guard('admin')->check()) {
-            return response()->json(['code' => 300, 'msg' => '没有登录']);
+            return response()->json(['code' => 300, 'msg' => __('lang.error')]);
         }
 
         Auth::guard('admin')->logout();
 
-        return response()->json(['code' => 200, 'msg' => '退出成功']);
+        return response()->json(['code' => 200, 'msg' => __('lang.success')]);
     }
 
 }
