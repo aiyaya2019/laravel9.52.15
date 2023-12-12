@@ -298,4 +298,5 @@ return [
 
     ],
 
+    'ip_whitelist' => explode(',', env('IP_WHITELIST', '127.0.0.1')),//ip白名单
 ];
