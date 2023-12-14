@@ -7,7 +7,12 @@ use Illuminate\Http\Request;
 
 class ApiBaseController extends BaseController {
 
+    public $user;
 
+    public function __construct() {
+        $user = auth('api')->user();
+        $this->user = !empty($user) ? objectToArray($user) : [];
+    }
 
 
 

@@ -10,6 +10,8 @@ class BannerController extends ApiBaseController {
     protected $logic;
 
     public function __construct() {
+        parent::__construct();
+
         $this->logic = new BannerLogic();
     }
 

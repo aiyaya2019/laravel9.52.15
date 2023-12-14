@@ -15,14 +15,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::middleware(['api.request.log'])->match(['get', 'post'], '/v1/login/login', [\App\Http\Controllers\Api\V1\LoginController::class, 'login']);
+Route::middleware(['api.request.log'])->match(['get', 'post'], '/v1/login/login', [\App\Http\Controllers\Api\V1\LoginController::class, 'login']);//api接口登录
+Route::middleware(['api.request.log'])->match(['post'], '/v1/wechat/login', [\App\Http\Controllers\Api\V1\WeChatController::class, 'login']);//微信登录
 
 Route::prefix('/v1')->middleware(['api.request.log', 'auth.api'])->group(function () {
-    Route::match(['get', 'post'], 'login/logout', [\App\Http\Controllers\Api\V1\LoginController::class, 'logout']);
+    Route::match(['post'], 'login/logout', [\App\Http\Controllers\Api\V1\LoginController::class, 'logout']);
+
+    Route::prefix('wechat')->group(function () {
+        Route::match(['post'], 'getPhone', [\App\Http\Controllers\Api\V1\WeChatController::class, 'getPhone']);
+    });
+    Route::prefix('me')->group(function () {
+        Route::match(['post'], 'saveUserInfo', [\App\Http\Controllers\Api\V1\MeController::class, 'saveUserInfo']);
+        Route::match(['post'], 'getUserInfo', [\App\Http\Controllers\Api\V1\MeController::class, 'getUserInfo']);
+    });
 
     Route::prefix('banner')->group(function () {
-        Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Api\V1\BannerController::class, 'list']);
-        Route::match(['get', 'post'], 'noLogin', [\App\Http\Controllers\Api\V1\BannerController::class, 'noLogin']);
+        Route::match(['post'], 'list', [\App\Http\Controllers\Api\V1\BannerController::class, 'list']);
+        Route::match(['post'], 'noLogin', [\App\Http\Controllers\Api\V1\BannerController::class, 'noLogin']);
     });
 });
 

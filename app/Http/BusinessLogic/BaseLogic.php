@@ -4,7 +4,12 @@ namespace App\Http\BusinessLogic;
 
 class BaseLogic {
 
-    public function __construct() {}
+    public $user;
+
+    public function __construct() {
+        $user = auth('api')->user();
+        $this->user = !empty($user) ? objectToArray($user) : [];
+    }
 
 
 

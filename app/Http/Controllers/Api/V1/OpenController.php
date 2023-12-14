@@ -11,6 +11,8 @@ class OpenController extends ApiBaseController {
     protected $adminLogic;
 
     public function __construct() {
+        parent::__construct();
+
         $this->adminLogic = new AdminLogic();
     }
 
