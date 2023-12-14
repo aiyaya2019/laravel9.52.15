@@ -10,6 +10,8 @@ class AdminLogic extends BaseLogic {
     protected $model;
 
     public function __construct() {
+        parent::__construct();
+
         $this->model = new AdminModel();
     }
 
