@@ -3,27 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
-use App\Http\BusinessLogic\Admin\AdminLogic;
-use App\Http\Controllers\Admin\AdminBaseController;
-use Illuminate\Http\Request;
+use App\Http\BusinessLogic\User\UserLogic;
 
-
-class AdminController extends AdminBaseController {
-
-
+class UserController extends AdminBaseController {
     protected $logic;
 
     public function __construct() {
         parent::__construct();
-        $this->logic = new AdminLogic();
+
+        $this->logic = new UserLogic();
     }
 
-    /**
-     * @Desc:
-     * @return \Illuminate\Http\JsonResponse
-     * @author: wanf
-     * @Time: 2023/11/18 10:19
-     */
     public function list() {
         try {
             $result = $this->logic->list();
@@ -40,6 +30,5 @@ class AdminController extends AdminBaseController {
     public function edit() {}
 
     public function delete() {}
-
 
 }

@@ -60,4 +60,6 @@ class UserLogic extends BaseLogic {
 
         return $user;
     }
+
+    public function list() {}
 }
