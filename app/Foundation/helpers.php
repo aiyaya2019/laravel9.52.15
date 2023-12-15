@@ -5,6 +5,19 @@ use Rtgm\sm\RtSm2;
 use App\Http\Common\Constant;
 
 /**
+ * @Desc:翻译提示信息
+ * @param string $msg 提示信息
+ * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
+ * @author: wanf
+ * @Time: 2023/12/15 15:25
+ */
+function getTranslateMsg(string $msg) {
+    str_starts_with($msg, 'lang.') && $msg = __($msg);
+
+    return $msg;
+}
+
+/**
  * @Desc:返回数据给前端
  * @param $code code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败，404找不到接口
  * @param $msg 提示信息

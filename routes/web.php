@@ -65,9 +65,13 @@ Route::prefix('demo')->group(function () {
         Route::match(['get', 'post'], 'usePublicImport', [\App\Http\Controllers\Demo\ImportController::class, 'usePublicImport']);
         Route::match(['get', 'post'], 'useCollectionImport', [\App\Http\Controllers\Demo\ImportController::class, 'useCollectionImport']);
     });
+
+    Route::prefix('/test2')->middleware(['admin.request.log'])->group(function () {
+        Route::match(['get', 'post'], 'checking', [\App\Http\Controllers\Demo\Test2Controller::class, 'checking']);
+    });
 });
 
 // Demo\TestController控制器路由入口 调试用
-Route::middleware(['admin.request.log'])->match(['get', 'post'],'demo/test/{action}', function(App\Http\Controllers\Demo\TestController $index, $action){
+Route::middleware(['admin.request.log'])->match(['get', 'post'],'demo/test/{action}/{params?}', function(App\Http\Controllers\Demo\TestController $index, $action, $params){
     return $index->$action();
 });
