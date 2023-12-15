@@ -4,27 +4,24 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
-class Handler extends ExceptionHandler
-{
+class Handler extends ExceptionHandler {
     /**
      * A list of exception types with their corresponding custom log levels.
      *
      * @var array<class-string<\Throwable>, \Psr\Log\LogLevel::*>
      */
-    protected $levels = [
-        //
-    ];
+    protected $levels = [];
 
     /**
      * A list of the exception types that are not reported.
      *
      * @var array<int, class-string<\Throwable>>
      */
-    protected $dontReport = [
-        //
-    ];
+    protected $dontReport = [];
 
     /**
      * A list of the inputs that are never flashed to the session on validation exceptions.
@@ -42,8 +39,7 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
         $this->reportable(function (Throwable $e) {
             // 不生效
             if ($e instanceof \Illuminate\Database\QueryException) {
@@ -52,4 +48,24 @@ class Handler extends ExceptionHandler
             }
         });
     }
+
+    public function render($request, Throwable $e) {
+        if ($e instanceof NotFoundHttpException || $e instanceof MethodNotAllowedHttpException) {
+            return returnData(404, $e->getMessage(), [], handleErrorData($e), $e);
+
+        } elseif ($e instanceof ValidatorException) {
+            // 验证器异常
+            return returnData($e->getCode(), $e->getMessage(), [], handleErrorData($e), $e);
+
+        } elseif ($e instanceof HttpMsgException) {
+            // 逻辑代码抛异常
+            return returnData($e->getCode(), $e->getMessage(), [], handleErrorData($e), $e);
+
+        } else {
+            return returnData(400, '代码错误，或检查代码中是否有接收异常', [], handleErrorData($e), $e);
+        }
+
+        return parent::render($request, $e);
+    }
+
 }

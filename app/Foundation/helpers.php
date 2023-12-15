@@ -6,7 +6,7 @@ use App\Http\Common\Constant;
 
 /**
  * @Desc:返回数据给前端
- * @param $code code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败
+ * @param $code code 状态码：200成功，201成功弹出确认窗口，300去登录，400失败，404找不到接口
  * @param $msg 提示信息
  * @param $data 数据
  * @param $errDetails 错误详情

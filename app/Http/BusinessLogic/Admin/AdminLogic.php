@@ -2,6 +2,7 @@
 
 namespace App\Http\BusinessLogic\Admin;
 
+use App\Exceptions\HttpMsgException;
 use App\Http\BusinessLogic\BaseLogic;
 use App\Models\AdminModel;
 
@@ -17,13 +18,12 @@ class AdminLogic extends BaseLogic {
 
     /**
      * @Desc:
-     * @return array * @throws \ErrorException
-     * @throws \ErrorException
+     * @return array * @throws HttpMsgException
+     * @throws HttpMsgException
      * @author: wanf
-     * @Time: 2023/11/18 9:49
+     * @Time: 2023/12/15 15:12
      */
     public function list() {
-
         $total = $this->model->getTotal();
 
         $list = [];
@@ -31,7 +31,7 @@ class AdminLogic extends BaseLogic {
             $list = $this->model->getAll();
 
             if (empty($list)) {
-                throw new \ErrorException(__('lang.error'), 400);
+                throw new HttpMsgException('lang.fail');
             }
         }
 
