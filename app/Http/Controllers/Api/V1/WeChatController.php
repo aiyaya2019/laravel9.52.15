@@ -101,4 +101,34 @@ class WeChatController extends BaseController {
         }
     }
 
+    /**
+     * @Desc:生成小程序码
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|void * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @author: wanf
+     * @Time: 2023/12/16 11:01
+     */
+    public function getMiniCode(Request $request) {
+        $scene = (string)$request->input('scene', '');
+
+        try {
+            $app = new Application($this->config);
+            $response = $app->getClient()->postJson('/wxa/getwxacodeunlimit', [
+                'scene' => $scene,
+                'page' => 'pages/index/index',
+                'width' => 430,
+                'check_path' => false,
+            ]);
+
+            $path = $response->saveAs('/tmp/wxacode-123.png');
+
+        } catch (Exception $e) {
+            return returnData($e->getCode(), $e->getMessage(), [], handleErrorData($e), $e);
+        }
+
+    }
+
 }

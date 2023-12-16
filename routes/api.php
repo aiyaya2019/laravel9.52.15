@@ -23,6 +23,7 @@ Route::prefix('/v1')->middleware(['api.request.log', 'auth.api'])->group(functio
 
     Route::prefix('wechat')->group(function () {
         Route::match(['post'], 'getPhone', [\App\Http\Controllers\Api\V1\WeChatController::class, 'getPhone']);
+        Route::match(['post'], 'getMiniCode', [\App\Http\Controllers\Api\V1\WeChatController::class, 'getMiniCode']);
     });
     Route::prefix('me')->group(function () {
         Route::match(['post'], 'saveUserInfo', [\App\Http\Controllers\Api\V1\MeController::class, 'saveUserInfo']);
