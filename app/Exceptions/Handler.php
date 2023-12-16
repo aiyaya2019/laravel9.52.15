@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use Exception;
 
 class Handler extends ExceptionHandler {
     /**
@@ -61,8 +62,9 @@ class Handler extends ExceptionHandler {
             // 逻辑代码抛异常
             return returnData($e->getCode(), $e->getMessage(), [], handleErrorData($e), $e);
 
-        } else {
-            return returnData(400, '代码错误，或检查代码中是否有接收异常', [], handleErrorData($e), $e);
+        } elseif ($e instanceof Exception) {
+            return returnData($e->getCode(), $e->getMessage(), [], handleErrorData($e), $e);
+            // return returnData(400, '代码错误，或检查代码中是否有接收异常', [], handleErrorData($e), $e);
         }
 
         return parent::render($request, $e);
