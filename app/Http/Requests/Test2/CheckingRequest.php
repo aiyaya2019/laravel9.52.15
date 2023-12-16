@@ -48,12 +48,10 @@ class CheckingRequest extends BaseRequest {
                 'array',
                 new NotEmptyArrayRule(),//数组不能包含false, 0, null等空值
             ],
-            // 'role_ids.*' => 'distinct',//数组中的值不能重复
-            'role_ids.*' => 'integer',//数组中的值必须为整数
+            'role_ids.*' => 'integer|distinct',//数组中的值必须为整数|数组中的值不能重复
 
             'relation' => ['array'],
-            // 'relation.*.id' => 'distinct',//数组中的值不能重复
-            'relation.*.id' => 'integer',//数组中的值必须为整数
+            'relation.*.id' => 'integer|distinct',//数组中id的值必须为整数|数组中id的值不能重复
 
             'pos_ids' => [
                 'array',
@@ -92,12 +90,12 @@ class CheckingRequest extends BaseRequest {
             'type.in' => 'lang.param_error',
 
             'role_ids.array' => sprintf(__('lang.param_array'), 'role_ids'),
-            // 'role_ids.*.distinct' => sprintf(__('lang.param_array_unique'), 'role_ids'),
             'role_ids.*.integer' => sprintf(__('lang.param_array_int'), 'role_ids'),
+            'role_ids.*.distinct' => sprintf(__('lang.param_array_unique'), 'role_ids'),
 
             'relation.array' => sprintf(__('lang.param_array'), 'relation'),
-            // 'relation.*.id.distinct' => sprintf(__('lang.param_array_val_unique'), 'relation', 'id'),
-            'relation.*.id.integer' => sprintf(__('lang.param_array_val_int'), 'relation', 'id'),
+            'relation.*.id.integer' => sprintf(__('lang.param_array_val_int'), 'relation', 'id'),//relation是二维数组
+            'relation.*.id.distinct' => sprintf(__('lang.param_array_val_unique'), 'relation', 'id'),
 
             'pos_ids.array' => sprintf(__('lang.param_array'), 'pos_ids'),
 

@@ -25,7 +25,7 @@ return [
     'param_array' => '%s 必须是数组',
     'param_array_unique' => '%s 数组中的值不能重复',
     'param_array_int' => '%s 数组中的值必须是整数',
-    'param_array_val_unique' => '%s 数组中 %s 的值必须是整数',
+    'param_array_val_unique' => '%s 数组中 %s 的值不能重复',
     'param_array_val_int' => '%s 数组中 %s 的值必须是整数',
 
 
