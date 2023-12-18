@@ -6,8 +6,8 @@ use App\Http\Common\Constant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder as DbBuilder;
+use Illuminate\Database\Eloquent\Builder;//self::select()中使用
+use Illuminate\Database\Query\Builder as DbBuilder;//DB::table($this->table)中使用
 use Illuminate\Support\Facades\Schema;
 
 class BaseModel extends Model {
@@ -17,6 +17,11 @@ class BaseModel extends Model {
         'updated_at',
         'created_at',
     ];
+
+    /**
+     * @var string 软删除字段
+     */
+    protected $softDeleteKey = 'deleted';
 
     public function __construct(array $attributes = []) {}
 
@@ -111,36 +116,9 @@ class BaseModel extends Model {
 
         $where = $this->whereHandle($condition);
 
-        return self::when(!empty($where), function(Builder $query) use($where) {
-            if (!empty($where['whereRaw'])) {
-                $query->whereRaw($where['whereRaw']);
-            }
-            if (!empty($where['where'])) {
-                $query->where($where['where']);
-            }
-            if (!empty($where['whereIn'])) {
-                foreach ($where['whereIn'] as $key => $value) {
-                    $query->whereIn($key, $value);
-                }
-            }
-            if (!empty($where['whereNotIn'])) {
-                foreach ($where['whereNotIn'] as $key => $value) {
-                    $query->whereNotIn($key, $value);
-                }
-            }
-            if (!empty($where['whereLike'])) {
-                $whereLike = $where['whereLike'];
-                foreach ($whereLike as $value) {
-                    $query->where(function ($query) use($value){
-                        foreach ($value[2] as $val) {
-                            $query->orWhere($val, 'like', "%$value[0]%");
-                        }
-                    });
-                }
-            }
-            return $query;
-        })
-            ->update($data);
+        $model = DB::table($this->table);
+
+        return $this->getWhere($model, $where)->update($data);
     }
 
     /**
@@ -162,35 +140,9 @@ class BaseModel extends Model {
         }
         $where = $this->whereHandle($condition);
 
-        $result = self::when(!empty($where), function(Builder $query) use($where) {
-            if (!empty($where['whereRaw'])) {
-                $query->whereRaw($where['whereRaw']);
-            }
-            if (!empty($where['where'])) {
-                $query->where($where['where']);
-            }
-            if (!empty($where['whereIn'])) {
-                foreach ($where['whereIn'] as $key => $value) {
-                    $query->whereIn($key, $value);
-                }
-            }
-            if (!empty($where['whereNotIn'])) {
-                foreach ($where['whereNotIn'] as $key => $value) {
-                    $query->whereNotIn($key, $value);
-                }
-            }
-            if (!empty($where['whereLike'])) {
-                $whereLike = $where['whereLike'];
-                foreach ($whereLike as $value) {
-                    $query->where(function ($query) use($value){
-                        foreach ($value[2] as $val) {
-                            $query->orWhere($val, 'like', "%$value[0]%");
-                        }
-                    });
-                }
-            }
-            return $query;
-        });
+        $model = DB::table($this->table);
+
+        $result = $this->getWhere($model, $where);
 
         // 软删
         if ($isSoftDelete) {
@@ -217,37 +169,9 @@ class BaseModel extends Model {
     public function getTotal($condition = []) {
         $where = $this->whereHandle($condition);
 
-        return DB::table($this->table)
-            ->when(!empty($where), function(DbBuilder $query) use($where) {
-                if (!empty($where['whereRaw'])) {
-                    $query->whereRaw($where['whereRaw']);
-                }
-                if (!empty($where['where'])) {
-                    $query->where($where['where']);
-                }
-                if (!empty($where['whereIn'])) {
-                    foreach ($where['whereIn'] as $key => $value) {
-                        $query->whereIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereNotIn'])) {
-                    foreach ($where['whereNotIn'] as $key => $value) {
-                        $query->whereNotIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereLike'])) {
-                    $whereLike = $where['whereLike'];
-                    foreach ($whereLike as $value) {
-                        $query->where(function ($query) use($value){
-                            foreach ($value[2] as $val) {
-                                $query->orWhere($val, 'like', "%$value[0]%");
-                            }
-                        });
-                    }
-                }
-                return $query;
-            })
-            ->count();
+        $model = DB::table($this->table);
+
+        return $this->getWhere($model, $where)->count();
     }
 
     /**
@@ -269,45 +193,18 @@ class BaseModel extends Model {
     public function getList($condition = [], $fields = '*', string $orderBy = '', int $page = Constant::PAGE, int $rows = Constant::ROWS, bool $toArray = true) {
         $where = $this->whereHandle($condition);
 
-        $data = self::select($fields)
-            ->when(!empty($where), function(Builder $query) use($where) {
-                if (!empty($where['whereRaw'])) {
-                    $query->whereRaw($where['whereRaw']);
-                }
-                if (!empty($where['where'])) {
-                    $query->where($where['where']);
-                }
-                if (!empty($where['whereIn'])) {
-                    foreach ($where['whereIn'] as $key => $value) {
-                        $query->whereIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereNotIn'])) {
-                    foreach ($where['whereNotIn'] as $key => $value) {
-                        $query->whereNotIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereLike'])) {
-                    $whereLike = $where['whereLike'];
-                    foreach ($whereLike as $value) {
-                        $query->where(function ($query) use($value){
-                            foreach ($value[2] as $val) {
-                                $query->orWhere($val, 'like', "%$value[0]%");
-                            }
-                        });
-                    }
-                }
-                return $query;
-            })
+        $model = DB::table($this->table)->select($fields);
+
+        $data = $this->getWhere($model, $where)
             ->when($orderBy != '', function(Builder $query) use($orderBy) {
                 return $query->orderByRaw($orderBy);
             })
-            ->when($page > 0, function(Builder $offset) use ($page, $rows) {
+            ->when($page > 0, function($offset) use ($page, $rows) {
                 $offset->offset(($page - 1) * $rows)->limit($rows);
             })
             ->get();
 
-        $toArray && !empty($data) && $data = $data->toArray();
+        $toArray && !empty($data) && $data = objectToArray($data);
 
         return $data;
     }
@@ -331,48 +228,21 @@ class BaseModel extends Model {
     public function getAll($condition = [], $fields = '*', string $orderBy = '', int $limit = 0, string $groupBy = '', bool $toArray = true) {
         $where = $this->whereHandle($condition);
 
-        $data = self::select($fields)
-            ->when(!empty($where), function(Builder $query) use($where) {
-                if (!empty($where['whereRaw'])) {
-                    $query->whereRaw($where['whereRaw']);
-                }
-                if (!empty($where['where'])) {
-                    $query->where($where['where']);
-                }
-                if (!empty($where['whereIn'])) {
-                    foreach ($where['whereIn'] as $key => $value) {
-                        $query->whereIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereNotIn'])) {
-                    foreach ($where['whereNotIn'] as $key => $value) {
-                        $query->whereNotIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereLike'])) {
-                    $whereLike = $where['whereLike'];
-                    foreach ($whereLike as $value) {
-                        $query->where(function ($query) use($value){
-                            foreach ($value[2] as $val) {
-                                $query->orWhere($val, 'like', "%$value[0]%");
-                            }
-                        });
-                    }
-                }
-                return $query;
-            })
-            ->when($orderBy != '', function(Builder $query) use($orderBy) {
+        $model = DB::table($this->table)->select($fields);
+
+        $data = $this->getWhere($model, $where)
+            ->when($orderBy != '', function(DbBuilder $query) use($orderBy) {
                 return $query->orderByRaw($orderBy);
             })
-            ->when($limit != 0, function(Builder $query) use($limit) {
+            ->when($limit != 0, function(DbBuilder $query) use($limit) {
                 return $query->limit($limit);
             })
-            ->when($groupBy != '', function(Builder $query) use($groupBy) {
+            ->when($groupBy != '', function(DbBuilder $query) use($groupBy) {
                 return $query->groupByRaw($groupBy);
             })
             ->get();
 
-        $toArray && !empty($data) && $data = $data->toArray();
+        $toArray && !empty($data) && $data = objectToArray($data);
 
         return $data;
     }
@@ -394,44 +264,17 @@ class BaseModel extends Model {
     public function getOne($condition = [], $fields = '*', string $orderBy = '', bool $toArray = true) {
         $where = $this->whereHandle($condition);
 
-        $result = self::select($fields)
-            ->when(!empty($where), function(Builder $query) use($where) {
-                if (!empty($where['whereRaw'])) {
-                    $query->whereRaw($where['whereRaw']);
-                }
-                if (!empty($where['where'])) {
-                    $query->where($where['where']);
-                }
-                if (!empty($where['whereIn'])) {
-                    foreach ($where['whereIn'] as $key => $value) {
-                        $query->whereIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereNotIn'])) {
-                    foreach ($where['whereNotIn'] as $key => $value) {
-                        $query->whereNotIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereLike'])) {
-                    $whereLike = $where['whereLike'];
-                    foreach ($whereLike as $value) {
-                        $query->where(function ($query) use($value){
-                            foreach ($value[2] as $val) {
-                                $query->orWhere($val, 'like', "%$value[0]%");
-                            }
-                        });
-                    }
-                }
-                return $query;
-            })
-            ->when($orderBy !== '', function (Builder $query) use($orderBy){
+        $model = DB::table($this->table)->select($fields);
+
+        $data = $this->getWhere($model, $where)
+            ->when($orderBy !== '', function (DbBuilder $query) use($orderBy){
                 return $query->orderByRaw($orderBy);
             })
             ->first();
 
-        $toArray && !empty($result) && $result = $result->toArray();
+        $toArray && !empty($data) && $data = objectToArray($data);
 
-        return $result;
+        return $data;
     }
 
     /**
@@ -452,42 +295,16 @@ class BaseModel extends Model {
     public function getColumn($condition = [], string $field = 'id', string $orderBy = '', bool $isDistinct = true, int $limit = 0) {
         $where = $this->whereHandle($condition);
 
-        return self::when(!empty($where), function(Builder $query) use($where) {
-                if (!empty($where['whereRaw'])) {
-                    $query->whereRaw($where['whereRaw']);
-                }
-                if (!empty($where['where'])) {
-                    $query->where($where['where']);
-                }
-                if (!empty($where['whereIn'])) {
-                    foreach ($where['whereIn'] as $key => $value) {
-                        $query->whereIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereNotIn'])) {
-                    foreach ($where['whereNotIn'] as $key => $value) {
-                        $query->whereNotIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereLike'])) {
-                    $whereLike = $where['whereLike'];
-                    foreach ($whereLike as $value) {
-                        $query->where(function ($query) use($value){
-                            foreach ($value[2] as $val) {
-                                $query->orWhere($val, 'like', "%$value[0]%");
-                            }
-                        });
-                    }
-                }
-                return $query;
-            })
-            ->when($orderBy !== '', function (Builder $query) use($orderBy){
+        $model = DB::table($this->table);
+
+        return $this->getWhere($model, $where)
+            ->when($orderBy !== '', function (DbBuilder $query) use($orderBy){
                 return $query->orderByRaw($orderBy);
             })
-            ->when($isDistinct, function (Builder $query){
+            ->when($isDistinct, function (DbBuilder $query){
                 return $query->distinct();
             })
-            ->when($limit != 0, function (Builder $query) use($limit){
+            ->when($limit != 0, function (DbBuilder $query) use($limit){
                 return $query->limit($limit);
             })
             ->pluck($field)
@@ -509,36 +326,10 @@ class BaseModel extends Model {
     public function getValue($condition = [], string $field = 'id', string $orderBy = '') {
         $where = $this->whereHandle($condition);
 
-        return self::when(!empty($where), function(Builder $query) use($where) {
-                if (!empty($where['whereRaw'])) {
-                    $query->whereRaw($where['whereRaw']);
-                }
-                if (!empty($where['where'])) {
-                    $query->where($where['where']);
-                }
-                if (!empty($where['whereIn'])) {
-                    foreach ($where['whereIn'] as $key => $value) {
-                        $query->whereIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereNotIn'])) {
-                    foreach ($where['whereNotIn'] as $key => $value) {
-                        $query->whereNotIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereLike'])) {
-                    $whereLike = $where['whereLike'];
-                    foreach ($whereLike as $value) {
-                        $query->where(function ($query) use($value){
-                            foreach ($value[2] as $val) {
-                                $query->orWhere($val, 'like', "%$value[0]%");
-                            }
-                        });
-                    }
-                }
-                return $query;
-            })
-            ->when($orderBy !== '', function (Builder $query) use($orderBy){
+        $model = DB::table($this->table);
+
+        return $this->getWhere($model, $where)
+            ->when($orderBy !== '', function (DbBuilder $query) use($orderBy){
                 return $query->orderByRaw($orderBy);
             })
             ->value($field);
@@ -594,6 +385,46 @@ class BaseModel extends Model {
             'whereNotIn' => $whereNotIn,
             'whereLike' => $whereLike,
         ];
+    }
+
+    /**
+     * @Desc:使用where条件
+     * @param $model
+     * @param array $where 经过whereHandle()处理之后的条件数组
+     * @return mixed
+     * @author: wanf
+     * @Time: 2023/12/18 14:27
+     */
+    protected function getWhere($model, array $where) {
+        return $model->when(!empty($where), function(DbBuilder $query) use($where) {
+            if (!empty($where['whereRaw'])) {
+                $query->whereRaw($where['whereRaw']);
+            }
+            if (!empty($where['where'])) {
+                $query->where($where['where']);
+            }
+            if (!empty($where['whereIn'])) {
+                foreach ($where['whereIn'] as $key => $value) {
+                    $query->whereIn($key, $value);
+                }
+            }
+            if (!empty($where['whereNotIn'])) {
+                foreach ($where['whereNotIn'] as $key => $value) {
+                    $query->whereNotIn($key, $value);
+                }
+            }
+            if (!empty($where['whereLike'])) {
+                $whereLike = $where['whereLike'];
+                foreach ($whereLike as $value) {
+                    $query->where(function ($query) use($value){
+                        foreach ($value[2] as $val) {
+                            $query->orWhere($val, 'like', "%$value[0]%");
+                        }
+                    });
+                }
+            }
+            return $query;
+        });
     }
 
     /**
