@@ -6,6 +6,8 @@ namespace App\Http\Common;
  * 全局常量类
  */
 class Constant {
+    const PAGE = 1;
+    const ROWS = 10;
     const HOME_BANNER = 1;
     const LIST_BANNER = 2;
 

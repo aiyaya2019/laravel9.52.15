@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Common\Constant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -87,6 +88,123 @@ class BaseModel extends Model {
     }
 
     /**
+     * @Desc:更新数据
+     * @param string|array $condition 更新条件，包含whereIn
+     * @param array $data 更新数据
+     * @return bool
+     *
+     * @param string|array $condition 条件类型如下：
+     * @param $condition1 = 'deleted = 0'; //原生
+     * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
+     * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     */
+    public function singleSave($condition, array $data) {
+        if (empty($condition)) {
+            return false;
+        }
+
+        !isset($data[self::UPDATED_AT]) && $data[self::UPDATED_AT] = date('Y-m-d H:i:s');
+
+        // 过滤数据表中不存在的字段
+        $data = $this->checkAttributeValue($data);
+
+        $where = $this->whereHandle($condition);
+
+        return self::when(!empty($where), function(Builder $query) use($where) {
+            if (!empty($where['whereRaw'])) {
+                $query->whereRaw($where['whereRaw']);
+            }
+            if (!empty($where['where'])) {
+                $query->where($where['where']);
+            }
+            if (!empty($where['whereIn'])) {
+                foreach ($where['whereIn'] as $key => $value) {
+                    $query->whereIn($key, $value);
+                }
+            }
+            if (!empty($where['whereNotIn'])) {
+                foreach ($where['whereNotIn'] as $key => $value) {
+                    $query->whereNotIn($key, $value);
+                }
+            }
+            if (!empty($where['whereLike'])) {
+                $whereLike = $where['whereLike'];
+                foreach ($whereLike as $value) {
+                    $query->where(function ($query) use($value){
+                        foreach ($value[2] as $val) {
+                            $query->orWhere($val, 'like', "%$value[0]%");
+                        }
+                    });
+                }
+            }
+            return $query;
+        })
+            ->update($data);
+    }
+
+    /**
+     * @Desc:删除数据
+     * @param string|array $condition 条件，包含whereIn
+     * @param bool $isSoftDelete 默认false 硬删除 true 软删除
+     * @param bool $isUpdateTime 默认true 更新修改时间 false 不更新修改时间
+     * @return bool|null
+     *
+     * @param string|array $condition 条件类型如下：
+     * @param $condition1 = 'deleted = 0'; //原生
+     * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
+     * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     */
+    public function singleDelete($condition, bool $isSoftDelete = false, bool $isUpdateTime = true) {
+        if (empty($condition)) {
+            return false;
+        }
+        $where = $this->whereHandle($condition);
+
+        $result = self::when(!empty($where), function(Builder $query) use($where) {
+            if (!empty($where['whereRaw'])) {
+                $query->whereRaw($where['whereRaw']);
+            }
+            if (!empty($where['where'])) {
+                $query->where($where['where']);
+            }
+            if (!empty($where['whereIn'])) {
+                foreach ($where['whereIn'] as $key => $value) {
+                    $query->whereIn($key, $value);
+                }
+            }
+            if (!empty($where['whereNotIn'])) {
+                foreach ($where['whereNotIn'] as $key => $value) {
+                    $query->whereNotIn($key, $value);
+                }
+            }
+            if (!empty($where['whereLike'])) {
+                $whereLike = $where['whereLike'];
+                foreach ($whereLike as $value) {
+                    $query->where(function ($query) use($value){
+                        foreach ($value[2] as $val) {
+                            $query->orWhere($val, 'like', "%$value[0]%");
+                        }
+                    });
+                }
+            }
+            return $query;
+        });
+
+        // 软删
+        if ($isSoftDelete) {
+            $data = [ $this->softDeleteKey => 1 ];
+
+            $isUpdateTime == true && $data[self::UPDATED_AT] = date('Y-m-d H:i:s');
+
+            return $result->update($data);
+        }
+
+        return $result->delete();// 硬删
+    }
+
+    /**
      * @Desc:查询数量
      * @param string|array $condition 查询条件，包含whereIn查询
      *
@@ -130,6 +248,68 @@ class BaseModel extends Model {
                 return $query;
             })
             ->count();
+    }
+
+    /**
+     * @Desc:查询并返回多条数据(分页)
+     * @param string|array $condition 查询条件，包含whereIn查询
+     * @param string|array $fields 查询字段
+     * @param string $orderBy 排序
+     * @param int $page 页码
+     * @param int $rows 每页数量
+     * @param bool $toArray 是否转数组：默认true转数组
+     * @return array|\Illuminate\Support\Collection
+     *
+     * @param string|array $condition 条件类型如下：
+     * @param $condition1 = 'deleted = 0'; //原生
+     * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
+     * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
+     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
+     */
+    public function getList($condition = [], $fields = '*', string $orderBy = '', int $page = Constant::PAGE, int $rows = Constant::ROWS, bool $toArray = true) {
+        $where = $this->whereHandle($condition);
+
+        $data = self::select($fields)
+            ->when(!empty($where), function(Builder $query) use($where) {
+                if (!empty($where['whereRaw'])) {
+                    $query->whereRaw($where['whereRaw']);
+                }
+                if (!empty($where['where'])) {
+                    $query->where($where['where']);
+                }
+                if (!empty($where['whereIn'])) {
+                    foreach ($where['whereIn'] as $key => $value) {
+                        $query->whereIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereNotIn'])) {
+                    foreach ($where['whereNotIn'] as $key => $value) {
+                        $query->whereNotIn($key, $value);
+                    }
+                }
+                if (!empty($where['whereLike'])) {
+                    $whereLike = $where['whereLike'];
+                    foreach ($whereLike as $value) {
+                        $query->where(function ($query) use($value){
+                            foreach ($value[2] as $val) {
+                                $query->orWhere($val, 'like', "%$value[0]%");
+                            }
+                        });
+                    }
+                }
+                return $query;
+            })
+            ->when($orderBy != '', function(Builder $query) use($orderBy) {
+                return $query->orderByRaw($orderBy);
+            })
+            ->when($page > 0, function(Builder $offset) use ($page, $rows) {
+                $offset->offset(($page - 1) * $rows)->limit($rows);
+            })
+            ->get();
+
+        $toArray && !empty($data) && $data = $data->toArray();
+
+        return $data;
     }
 
     /**
@@ -269,7 +449,7 @@ class BaseModel extends Model {
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
      * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
-    public function getFieldColumn($condition = [], string $field = 'id', string $orderBy = '', bool $isDistinct = true, int $limit = 0) {
+    public function getColumn($condition = [], string $field = 'id', string $orderBy = '', bool $isDistinct = true, int $limit = 0) {
         $where = $this->whereHandle($condition);
 
         return self::when(!empty($where), function(Builder $query) use($where) {
@@ -362,123 +542,6 @@ class BaseModel extends Model {
                 return $query->orderByRaw($orderBy);
             })
             ->value($field);
-    }
-
-    /**
-     * @Desc:更新数据
-     * @param string|array $condition 更新条件，包含whereIn
-     * @param array $data 更新数据
-     * @return bool
-     *
-     * @param string|array $condition 条件类型如下：
-     * @param $condition1 = 'deleted = 0'; //原生
-     * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
-     * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
-     */
-    public function singleSave($condition, array $data) {
-        if (empty($condition)) {
-            return false;
-        }
-
-        !isset($data[self::UPDATED_AT]) && $data[self::UPDATED_AT] = date('Y-m-d H:i:s');
-
-        // 过滤数据表中不存在的字段
-        $data = $this->checkAttributeValue($data);
-
-        $where = $this->whereHandle($condition);
-
-        return self::when(!empty($where), function(Builder $query) use($where) {
-                if (!empty($where['whereRaw'])) {
-                    $query->whereRaw($where['whereRaw']);
-                }
-                if (!empty($where['where'])) {
-                    $query->where($where['where']);
-                }
-                if (!empty($where['whereIn'])) {
-                    foreach ($where['whereIn'] as $key => $value) {
-                        $query->whereIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereNotIn'])) {
-                    foreach ($where['whereNotIn'] as $key => $value) {
-                        $query->whereNotIn($key, $value);
-                    }
-                }
-                if (!empty($where['whereLike'])) {
-                    $whereLike = $where['whereLike'];
-                    foreach ($whereLike as $value) {
-                        $query->where(function ($query) use($value){
-                            foreach ($value[2] as $val) {
-                                $query->orWhere($val, 'like', "%$value[0]%");
-                            }
-                        });
-                    }
-                }
-                return $query;
-            })
-            ->update($data);
-    }
-
-    /**
-     * @Desc:删除数据
-     * @param string|array $condition 条件，包含whereIn
-     * @param bool $isSoftDelete 默认false 硬删除 true 软删除
-     * @param bool $isUpdateTime 默认true 更新修改时间 false 不更新修改时间
-     * @return bool|null
-     *
-     * @param string|array $condition 条件类型如下：
-     * @param $condition1 = 'deleted = 0'; //原生
-     * @param $condition2 = ['deleted' => 0, 'id' =>  1]; //键值对。['字段名' => 值]。
-     * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
-     * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
-     */
-    public function singleDelete($condition, bool $isSoftDelete = false, bool $isUpdateTime = true) {
-        if (empty($condition)) {
-            return false;
-        }
-        $where = $this->whereHandle($condition);
-
-        $result = self::when(!empty($where), function(Builder $query) use($where) {
-            if (!empty($where['whereRaw'])) {
-                $query->whereRaw($where['whereRaw']);
-            }
-            if (!empty($where['where'])) {
-                $query->where($where['where']);
-            }
-            if (!empty($where['whereIn'])) {
-                foreach ($where['whereIn'] as $key => $value) {
-                    $query->whereIn($key, $value);
-                }
-            }
-            if (!empty($where['whereNotIn'])) {
-                foreach ($where['whereNotIn'] as $key => $value) {
-                    $query->whereNotIn($key, $value);
-                }
-            }
-            if (!empty($where['whereLike'])) {
-                $whereLike = $where['whereLike'];
-                foreach ($whereLike as $value) {
-                    $query->where(function ($query) use($value){
-                        foreach ($value[2] as $val) {
-                            $query->orWhere($val, 'like', "%$value[0]%");
-                        }
-                    });
-                }
-            }
-            return $query;
-        });
-
-        // 软删
-        if ($isSoftDelete) {
-            $data = [ $this->softDeleteKey => 1 ];
-
-            $isUpdateTime == true && $data[self::UPDATED_AT] = date('Y-m-d H:i:s');
-
-            return $result->update($data);
-        }
-
-        return $result->delete();// 硬删
     }
 
     /**
