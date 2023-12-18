@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Demo;
 
+use App\Http\Controllers\BaseController;
 use App\Http\Controllers\Controller;
 use App\Http\Excel\MoreImgExport;
 use App\Http\Excel\MoreSheetExport;
 use App\Http\Excel\SampleExport;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ExportController extends Controller {
+class ExportController extends BaseController {
 
     /**
      * @Desc:简单导出

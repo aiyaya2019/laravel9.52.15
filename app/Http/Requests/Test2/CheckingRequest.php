@@ -59,12 +59,12 @@ class CheckingRequest extends BaseRequest {
             ],
 
             'account' => [
-                Rule::unique('admin')->where('id', $id)->ignore(1, 'deleted'),
+                Rule::unique('admin')->ignore(1, 'deleted'),
             ],
 
             'name' => [
-                Rule::unique('admin')->where(function ($query) use($id, $name) {
-                    $query->where('name', $name)->where('id', '<>', $id)->where('deleted', 0);
+                Rule::unique('admin')->where(function ($query) use($id) {
+                    $query->where('id', '<>', $id)->where('deleted', 0);
                 })
             ],
         ];

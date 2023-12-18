@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Demo;
 
 use App\Http\Common\ConstantArr;
+use App\Http\Controllers\BaseController;
 use App\Http\Controllers\Controller;
 use App\Http\Excel\Imports;
 use App\Http\Excel\UseCollectionImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ImportController extends Controller {
+class ImportController extends BaseController {
 
     /**
      * @Desc:使用公用导入类进行导入，导入数据在控制器中处理

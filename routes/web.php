@@ -68,6 +68,7 @@ Route::prefix('demo')->group(function () {
 
     Route::prefix('/test2')->middleware(['admin.request.log'])->group(function () {
         Route::match(['get', 'post'], 'checking', [\App\Http\Controllers\Demo\Test2Controller::class, 'checking']);
+        Route::match(['get', 'post'], 'checking2', [\App\Http\Controllers\Demo\Test2Controller::class, 'checking2']);
     });
 });
 

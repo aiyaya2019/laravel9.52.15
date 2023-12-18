@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Demo;
 
+use App\Http\Controllers\BaseController;
 use App\Models\User;
 use App\Models\UserModel;
 
-class TestController {
+class TestController extends BaseController {
 
     /**
      * @Desc:curl请求参数以数组形式发送
