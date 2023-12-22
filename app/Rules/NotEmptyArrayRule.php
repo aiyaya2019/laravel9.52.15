@@ -27,7 +27,7 @@ class NotEmptyArrayRule extends BaseRule {
      * @return bool
      */
     public function passes($attribute, $value) {
-        if (!is_array($value)) {
+        if (!is_array($value) || empty($value)) {
             return false;
         }
 
