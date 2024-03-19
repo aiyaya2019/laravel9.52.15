@@ -747,3 +747,38 @@ function isTwoArray(array $data) {
 
     return true;
 }
+
+/**
+ * @Desc:根据一维数组元素个数，生成对应的Excel列字母(仅适用于最多702列（到ZZ）的情况)。使用：$columnLetters = array_map('getExcelColumn', array_keys($header));
+ * @param $index
+ * @return mixed|string
+ * @author: wanf
+ * @Time: 2024/3/19 20:14
+ */
+function getExcelColumn($index) {
+    $arr = range('A', 'Z');
+    $len = count($arr);
+    if ($index<$len) {
+        return $arr[$index];
+    } else {
+        $colFirstIndex = intdiv($index, $len) - 1;
+        $colSecondIndex = $index % $len;
+        return $arr[$colFirstIndex] . $arr[$colSecondIndex];
+    }
+}
+
+/**
+ * @Desc:根据一维数组元素个数，生成对应的Excel列字母(可超过702列)
+ * @param $index
+ * @return string
+ * @author: wanf
+ * @Time: 2024/3/19 20:22
+ */
+function getExcelColumns($index) {
+    if ($index >= 0 && $index < 26) {
+        return chr(65 + $index);
+    } elseif ($index > 25) {
+        return getExcelColumn(intdiv(($index), 26) - 1) . getExcelColumn($index % 26);
+    }
+    return '';
+}
