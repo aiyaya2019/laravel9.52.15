@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Open;
 
-use App\Http\BusinessLogic\Banner\BannerLogic;
+use App\Http\Logic\Banner\BannerLogic;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\BusinessLogic;
+namespace App\Http\Logic;
 
 class BaseLogic {
 

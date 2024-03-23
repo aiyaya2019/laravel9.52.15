@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\BusinessLogic\Admin;
+namespace App\Http\Logic\Admin;
 
 use App\Exceptions\HttpMsgException;
-use App\Http\BusinessLogic\BaseLogic;
+use App\Http\Logic\BaseLogic;
 use App\Models\AdminModel;
 
 class AdminLogic extends BaseLogic {

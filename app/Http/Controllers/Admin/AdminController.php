@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
-use App\Http\BusinessLogic\Admin\AdminLogic;
+use App\Http\Logic\Admin\AdminLogic;
 use App\Http\Controllers\Admin\AdminBaseController;
 use Illuminate\Http\Request;
 

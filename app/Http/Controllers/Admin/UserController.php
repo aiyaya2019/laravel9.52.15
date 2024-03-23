@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
-use App\Http\BusinessLogic\User\UserLogic;
+use App\Http\Logic\User\UserLogic;
 
 class UserController extends AdminBaseController {
     protected $logic;
