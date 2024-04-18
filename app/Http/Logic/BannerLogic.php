@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Logic\Banner;
+namespace App\Http\Logic;
 
-use App\Http\Logic\BaseLogic;
 use App\Models\BannerModel;
 
 class BannerLogic extends BaseLogic {

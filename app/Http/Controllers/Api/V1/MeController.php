@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use Exception;
-use App\Http\Logic\User\UserLogic;
+use App\Http\Logic\UserLogic;
 
 class MeController extends ApiBaseController {
     public $logic;

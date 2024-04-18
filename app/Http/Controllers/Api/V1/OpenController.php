@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Logic\Admin\AdminLogic;
-use App\Http\Logic\Banner\BannerLogic;
+use App\Http\Logic\AdminLogic;
+use App\Http\Logic\BannerLogic;
 use App\Http\Controllers\Api\V1\ApiBaseController;
 use Illuminate\Http\Request;
 

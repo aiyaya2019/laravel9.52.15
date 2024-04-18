@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Logic\User;
+namespace App\Http\Logic;
 
-use App\Http\Logic\BaseLogic;
 use App\Models\UserModel;
 use Illuminate\Support\Facades\Cache;
 

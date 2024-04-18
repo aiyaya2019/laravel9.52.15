@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Logic\Banner\BannerLogic;
+use App\Http\Logic\BannerLogic;
 use App\Http\Common\Constant;
 use App\Http\Common\ConstantArr;
 use App\Http\Controllers\Admin\AdminBaseController;
