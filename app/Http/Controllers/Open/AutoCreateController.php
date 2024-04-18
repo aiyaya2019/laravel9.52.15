@@ -31,20 +31,32 @@ class AutoCreateController extends BaseController {
     }
 
     /**
+     * @Desc:获取所有数据表
+     * @return array|mixed
+     * @author: wanf
+     * @Time: 2024/4/18 20:26
+     */
+    public function getTables() {
+        $sql = 'SELECT table_name, table_comment, create_time, update_time FROM information_schema.tables WHERE table_schema = (SELECT DATABASE()) ORDER BY create_time DESC';
+
+        $tables = Db::select($sql);
+
+        !$tables && $tables = objectToArray($tables);
+
+        return $tables;
+    }
+
+    /**
      * @Desc:根据数据表名称批量创建model
      * @return false|void
      * @author: wanf
      * @Time: 2024/4/18 20:11
      */
     public function createModel() {
-        $sql = 'SELECT table_name, table_comment, create_time, update_time FROM information_schema.tables WHERE table_schema = (SELECT DATABASE()) ORDER BY create_time DESC';
-
-        $tables = Db::select($sql);
+        $tables = $this->getTables();
         if (!$tables) {
             return false;
         }
-
-        $tables = objectToArray($tables);
 
         $modelPath = sprintf("%s\Models\\", app_path());
         $content = <<<'CODE'
