@@ -46,6 +46,10 @@ Route::prefix('/open')->middleware(['admin.request.log'])->group(function () {
     Route::prefix('/test')->group(function () {
         Route::match(['get', 'post'], 't1', [\App\Http\Controllers\Open\TestController::class, 't1']);
     });
+
+    Route::prefix('/autoCreate')->group(function () {
+        Route::match(['get', 'post'], 'create', [\App\Http\Controllers\Open\AutoCreateController::class, 'create']);
+    });
 });
 
 // 对外开放的公共函数接口

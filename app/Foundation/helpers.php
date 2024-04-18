@@ -782,3 +782,13 @@ function getExcelColumns($index) {
     }
     return '';
 }
+
+/**
+ * @Desc:获取当前服务器系统类型
+ * @return string
+ * @author: wanf
+ * @Time: 2023/12/2 10:10
+ */
+function getServerSystem() {
+    return (DIRECTORY_SEPARATOR == '\\') ? "windows" : 'linux';
+}
