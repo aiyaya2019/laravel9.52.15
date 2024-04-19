@@ -49,7 +49,7 @@ class AutoCreateController extends BaseController {
 
     /**
      * @Desc:根据数据表名称批量创建model
-     * @return false|void
+     * @return bool|false
      * @author: wanf
      * @Time: 2024/4/18 20:11
      */
@@ -257,6 +257,14 @@ class AutoCreateController extends BaseController {
         }
 
         return true;
+    }
+
+    public function createController() {
+        $tables = $this->getTables();
+        if (!$tables) {
+            return false;
+        }
+
     }
 
 
