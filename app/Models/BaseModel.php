@@ -178,9 +178,9 @@ class BaseModel extends Model {
      * @Desc:查询并返回多条数据(分页)
      * @param string|array $condition 查询条件，包含whereIn查询
      * @param string|array $fields 查询字段
-     * @param string $orderBy 排序
      * @param int $page 页码
      * @param int $rows 每页数量
+     * @param string $orderBy 排序
      * @param bool $toArray 是否转数组：默认true转数组
      * @return array|\Illuminate\Support\Collection
      *
@@ -190,7 +190,7 @@ class BaseModel extends Model {
      * @param $condition3 = ['deleted' => 0, 'id' => [2]]; //键值对，值可以是一维数组，用于in查询。
      * @param $condition4 = [ ['deleted', '=', 0], ['id', 'in', [2, 3, 4]], ['id', 'not in', [2, 3, 4]], ['一级', 'like', ['name', 'uuid']] ]; // 1、[ ['字段名'， '运算符'，值(可以是数组，用于in查询)] ]；2、[ ['值'， 'like'，['字段一', '字段二'], ...] ]
      */
-    public function getList($condition = [], $fields = '*', string $orderBy = '', int $page = Constant::PAGE, int $rows = Constant::ROWS, bool $toArray = true) {
+    public function getList($condition = [], $fields = '*', int $page = Constant::PAGE, int $rows = Constant::ROWS, string $orderBy = '', bool $toArray = true) {
         $where = $this->whereHandle($condition);
 
         $model = DB::table($this->table)->select($fields);
