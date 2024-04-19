@@ -70,6 +70,22 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 1、项目中没有push vendor的依赖，拉取代码之后先安装依赖：composer install
 
+如报以下错误，php需要启用sodium扩展：
+````
+Installing dependencies from lock file (including require-dev)
+Verifying lock file contents can be installed on current platform.
+Your lock file does not contain a compatible set of packages. Please run composer update.
+
+  Problem 1
+    - w7corp/easywechat is locked to version 6.7.0 and an update of this package was not requested.
+    - w7corp/easywechat 6.7.0 requires ext-sodium * -> it is missing from your system. Install or enable PHP's sodium extension.
+
+To enable extensions, verify that they are enabled in your .ini files:
+    - D:\phpstudy_pro\Extensions\php\php8.0.2nts\php.ini
+You can also run `php --ini` in a terminal to see which files are used by PHP in CLI mode.
+Alternatively, you can run Composer with `--ignore-platform-req=ext-sodium` to temporarily ignore these required extensions.
+````
+
 2、如果没有maatwebsite/excel依赖，就安装3.*以上版本maatwebsite/excel，命令：composer require maatwebsite/excel --update-with-dependencies
 
 3、composer require w7corp/easywechat:^6.7。安装该依赖需要先开启sodium扩展
