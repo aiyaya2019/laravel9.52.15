@@ -39,6 +39,24 @@ class AdminLogic extends BaseLogic {
     }
 
     /**
+     * @Desc:详情
+     * @return array|mixed
+     * @author: wanf
+     * @Time: 2024/4/19 22:12
+     */
+    public function details($post = []) {
+        $where = [];
+
+        $data = $this->model->getOne(['id' => $post['id']]);
+
+        if (empty($data)) {
+            throw new HttpMsgException('lang.no_data');
+        }
+
+        return $data;
+    }
+
+    /**
      * @Desc:添加
      * @param $post
      * @return array * @throws HttpMsgException

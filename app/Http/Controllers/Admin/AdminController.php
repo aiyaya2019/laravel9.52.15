@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use Exception;
@@ -28,6 +27,19 @@ class AdminController extends AdminBaseController {
             $post = $request->except(['_token', '_method', 's']);
 
             $result = $this->logic->list($post);
+
+            return returnData(200, __('lang.success'), $result);
+
+        } catch (Exception $exception) {
+            return returnData($exception->getCode(), $exception->getMessage(), [], handleErrorData($exception), $exception);
+        }
+    }
+
+    public function details(Request $request) {
+        try {
+            $post = $request->except(['_token', '_method', 's']);
+
+            $result = $this->logic->details($post);
 
             return returnData(200, __('lang.success'), $result);
 

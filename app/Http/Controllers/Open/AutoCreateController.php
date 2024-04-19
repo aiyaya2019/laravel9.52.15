@@ -163,6 +163,24 @@ class AutoCreateController extends BaseController {
             }
 
             /**
+             * @Desc:详情
+             * @return array|mixed
+             * @author: auto create
+             * @Time: %s
+             */
+            public function details($post = []) {
+                $where = [];
+        
+                $data = $this->model->getOne(['id' => $post['id']]);
+        
+                if (empty($data)) {
+                    throw new HttpMsgException('lang.no_data');
+                }
+        
+                return $data;
+            }
+
+            /**
              * @Desc:添加
              * @param $post
              * @return array * @throws HttpMsgException
@@ -251,7 +269,7 @@ class AutoCreateController extends BaseController {
             }
 
             // 创建文件
-            file_put_contents($file, sprintf($content, $fileName, $value['TABLE_COMMENT'], $fileName, $fileName, $time, $time, $time, $time,));
+            file_put_contents($file, sprintf($content, $fileName, $value['TABLE_COMMENT'], $fileName, $fileName, $time, $time, $time, $time, $time,));
 
             recordLog(1, sprintf('%s 逻辑文件创建成功', $file));
         }

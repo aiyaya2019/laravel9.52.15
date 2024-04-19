@@ -26,6 +26,7 @@ Route::prefix('/server')->middleware(['admin.request.log', 'auth.admin'])->group
 
     Route::prefix('/admin')->group(function () {
         Route::match(['get', 'post'], 'list', [\App\Http\Controllers\Admin\AdminController::class, 'list']);
+        Route::match(['get', 'post'], 'details', [\App\Http\Controllers\Admin\AdminController::class, 'details']);
     });
 
     Route::prefix('/user')->group(function () {
